@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Alert;
 
 class Expediente extends Model
 {
@@ -47,4 +48,9 @@ class Expediente extends Model
     {
         return $this->morphMany(Note::class, 'notable');
     }
+
+    public function alertas()
+{
+    return $this->morphMany(Alert::class, 'alertable');
+}
 }

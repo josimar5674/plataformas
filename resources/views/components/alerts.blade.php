@@ -437,21 +437,19 @@
         };
     @endphp
 
-    <div style="
-        margin-top:4px;
-        font-size:13px;
-        color:var(--text-secondary);
-    ">
+<div style="
+    margin-top:4px;
+    font-size:13px;
+    color:var(--text-secondary);
+">
 
-        🏷️
+    🏷️
 
-        <strong style="color:var(--text);">
-            {{ $nombreReferencia }}:
-        </strong>
-
+    <strong style="color:var(--text);">
         {{ $metadata['valor'] }}
+    </strong>
 
-    </div>
+</div>
 
 @endif
 

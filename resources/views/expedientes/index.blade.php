@@ -1516,8 +1516,7 @@ if ($expedienteSeleccionado) {
                     📄 Bitacora
                 </div>
 
-                <div style="opacity:.65; margin-bottom:15px;">
-
+<div style="margin-bottom:15px;">
                  @include('components.notes',[
     'modelo' => $expedienteSeleccionado,
     'modelClass' => 'App\Models\expediente'
@@ -1530,6 +1529,12 @@ if ($expedienteSeleccionado) {
     'modelClass' => 'App\Models\expediente'
 ])
 
+
+@include('components.alerts',[
+    'modelo' => $expedienteSeleccionado,
+    'referencia' => 'numero_expediente',
+    'modelClass' => 'App\Models\Expediente'
+])
 
                 </div>
 
