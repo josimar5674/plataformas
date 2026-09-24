@@ -24,6 +24,9 @@ use App\Http\Controllers\AlertController;
 use App\Http\Controllers\GoogleWorkspaceController;
 use App\Http\Controllers\BitacoraController;
 use App\Http\Controllers\ImagenController;
+use App\Http\Controllers\ExpedienteController;
+use App\Http\Controllers\SujetoController;
+use App\Http\Controllers\MovimientoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -654,6 +657,43 @@ Route::post('/imagenes', [ImagenController::class, 'store'])
 Route::delete('/imagenes/{imagen}', [ImagenController::class, 'destroy'])
     ->name('imagenes.destroy');
 
+
+Route::resource('expedientes', ExpedienteController::class);
+
+Route::post(
+    '/expedientes/{expediente}/sujetos',
+    [SujetoController::class, 'store']
+)->name('expedientes.sujetos.store');
+
+Route::put(
+    '/sujetos/{sujeto}',
+    [SujetoController::class, 'update']
+)->name('sujetos.update');
+
+Route::delete(
+    '/sujetos/{sujeto}',
+    [SujetoController::class, 'destroy']
+)->name('sujetos.destroy');
+
+Route::post(
+    '/expedientes/{expediente}/movimientos',
+    [MovimientoController::class, 'store']
+)->name('expedientes.movimientos.store');
+
+Route::put(
+    '/movimientos/{movimiento}',
+    [MovimientoController::class, 'update']
+)->name('movimientos.update');
+
+Route::delete(
+    '/movimientos/{movimiento}',
+    [MovimientoController::class, 'destroy']
+)->name('movimientos.destroy');
+
+Route::patch(
+    '/expedientes/{expediente}/estado',
+    [ExpedienteController::class, 'updateEstado']
+)->name('expedientes.estado.update');
 
 
 
