@@ -695,6 +695,7 @@ Route::patch(
     [ExpedienteController::class, 'updateEstado']
 )->name('expedientes.estado.update');
 
-
+Route::put('/movimientos/{movimiento}', [MovimientoController::class, 'update'])
+    ->name('movimientos.update');
 
 });

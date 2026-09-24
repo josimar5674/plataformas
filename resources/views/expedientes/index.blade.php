@@ -295,7 +295,15 @@
     }
 
     .panel-movimientos {
-        border-top: 3px solid #7c3aed;
+         border-top: 3px solid #7c3aed;
+
+    margin-top: 25px;
+
+    height: 450px;
+
+    overflow-y: auto;
+
+    box-sizing: border-box;
     }
 
     .panel-notas {
@@ -352,14 +360,28 @@
        GRID
        ========================= */
 
-    .exp-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 18px;
+.exp-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
 
-        align-items: start;
-    }
+    align-items: stretch;
 
+    height: 520px;
+}
+
+.exp-grid > .exp-panel {
+    min-height: 0;
+    height: 520px;
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+
+.exp-grid + .exp-panel {
+    position: relative;
+    z-index: 1;
+    clear: both;
+}
     /* =========================
        FORMULARIOS
        ========================= */
@@ -370,20 +392,50 @@
         gap: 10px;
     }
 
-    .exp-input,
-    .exp-select,
-    .exp-textarea {
-        width: 100%;
+ .exp-input,
+.exp-select,
+.exp-textarea {
+    width: 100%;
+    padding: 10px 12px;
 
-        padding: 9px 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 9px;
 
-        border: 1px solid #d1d5db;
+    background: white;
+    color: #111827;
 
-        border-radius: 8px;
+    font-size: 14px;
+    outline: none;
 
-        background: white;
-        color: #111827;
-    }
+    transition: border-color .2s, box-shadow .2s;
+}
+
+.exp-select {
+    cursor: pointer;
+    appearance: none;
+
+    background-image: linear-gradient(45deg, transparent 50%, #6b7280 50%),
+                      linear-gradient(135deg, #6b7280 50%, transparent 50%);
+
+    background-position:
+        calc(100% - 17px) 50%,
+        calc(100% - 11px) 50%;
+
+    background-size:
+        6px 6px,
+        6px 6px;
+
+    background-repeat: no-repeat;
+
+    padding-right: 40px;
+}
+
+.exp-input:focus,
+.exp-select:focus,
+.exp-textarea:focus {
+    border-color: #0A84FF;
+    box-shadow: 0 0 0 3px rgba(10, 132, 255, .12);
+}
 
     [data-theme="dark"] .exp-input,
     [data-theme="dark"] .exp-select,
@@ -466,6 +518,82 @@
         }
 
     }
+
+    .exp-switch-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    min-height: 48px;
+}
+
+.exp-switch {
+    position: relative;
+    display: inline-block;
+
+    width: 46px;
+    height: 26px;
+
+    flex-shrink: 0;
+}
+
+.exp-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.exp-switch-slider {
+    position: absolute;
+    inset: 0;
+
+    cursor: pointer;
+
+    background: #d1d5db;
+
+    border-radius: 999px;
+
+    transition: .2s;
+}
+
+.exp-switch-slider::before {
+    content: "";
+
+    position: absolute;
+
+    width: 20px;
+    height: 20px;
+
+    left: 3px;
+    top: 3px;
+
+    background: white;
+
+    border-radius: 50%;
+
+    box-shadow: 0 1px 3px rgba(0,0,0,.25);
+
+    transition: .2s;
+}
+
+.exp-switch input:checked + .exp-switch-slider {
+    background: #0A84FF;
+}
+
+.exp-switch input:checked + .exp-switch-slider::before {
+    transform: translateX(20px);
+}
+
+.exp-switch-title {
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.exp-switch-description {
+    font-size: 12px;
+    opacity: .6;
+    margin-top: 2px;
+}
 
 </style>
 
@@ -697,15 +825,18 @@ if ($expedienteSeleccionado) {
                 📋 Información General
             </div>
 
+@if($puedeEditar)
 
-            <button
-                type="button"
-                onclick="activarEdicion()"
-                class="exp-btn exp-btn-yellow">
+    <button
+        type="button"
+        onclick="activarEdicion()"
+        class="exp-btn exp-btn-yellow">
 
-                ✏️ Editar
+        ✏️ Editar
 
-            </button>
+    </button>
+
+@endif
 
 
             {{-- VISTA --}}
@@ -971,20 +1102,31 @@ if ($expedienteSeleccionado) {
 
                         </div>
 
+<div class="exp-switch-container">
 
-                        <div style="display:flex; align-items:center; gap:8px;">
+    <label class="exp-switch">
 
-                            <input
-                                type="checkbox"
-                                name="permite_edicion"
-                                value="1"
-                                {{ $expedienteSeleccionado->permite_edicion ? 'checked' : '' }}>
+        <input
+            type="checkbox"
+            name="permite_edicion"
+            value="1"
+            {{ $expedienteSeleccionado->permite_edicion ? 'checked' : '' }}>
 
-                            <label>
-                                Permitir modificación
-                            </label>
+        <span class="exp-switch-slider"></span>
 
-                        </div>
+    </label>
+
+    <div>
+        <div class="exp-switch-title">
+            Permitir modificación
+        </div>
+
+        <div class="exp-switch-description">
+            El usuario asignado podrá modificar este expediente.
+        </div>
+    </div>
+
+</div>
 
                     @endif
 
@@ -1413,96 +1555,202 @@ if ($expedienteSeleccionado) {
              MOVIMIENTOS
         ================================================== --}}
 
-        <div class="exp-panel panel-movimientos">
+    <div class="exp-panel panel-movimientos">
 
-            <div class="exp-panel-title">
-                📜 Movimientos
+    <div class="exp-panel-title">
+        📜 Movimientos
+    </div>
+
+
+    {{-- =========================
+         NUEVO MOVIMIENTO
+    ========================== --}}
+
+
+
+        <form
+            method="POST"
+            action="{{ route('expedientes.movimientos.store', $expedienteSeleccionado->id) }}">
+
+            @csrf
+
+            <div class="exp-form-grid">
+
+                <input
+                    type="date"
+                    name="fecha"
+                    required
+                    class="exp-input">
+
             </div>
 
 
-            <form
-                method="POST"
-                action="{{ route('expedientes.movimientos.store', $expedienteSeleccionado->id) }}"
-                enctype="multipart/form-data">
-
-                @csrf
-
-                <div class="exp-form-grid">
-
-                    <input
-                        type="date"
-                        name="fecha"
-                        required
-                        class="exp-input">
+            <textarea
+                name="descripcion"
+                required
+                placeholder="Descripción del movimiento..."
+                class="exp-textarea"
+                style="margin-top:10px;"
+                rows="3"></textarea>
 
 
-                 
+            <button
+                type="submit"
+                class="exp-btn exp-btn-blue"
+                style="margin-top:10px;">
 
+                Guardar Movimiento
+
+            </button>
+
+        </form>
+
+
+
+
+    {{-- =========================
+         LISTA DE MOVIMIENTOS
+    ========================== --}}
+
+    <div style="margin-top:18px;">
+
+        @forelse($expedienteSeleccionado->movimientos->sortByDesc('fecha') as $movimiento)
+
+            <div class="exp-list-item">
+
+                <strong>
+                    {{ $movimiento->fecha }}
+                </strong>
+
+
+                <div style="margin-top:5px;">
+                    {{ $movimiento->descripcion }}
                 </div>
 
 
-                <textarea
-                    name="descripcion"
-                    required
-                    placeholder="Descripción del movimiento..."
-                    class="exp-textarea"
-                    style="margin-top:10px;"
-                    rows="3"></textarea>
+                {{-- =========================
+                     ACCIONES
+                ========================== --}}
+
+                @if($puedeEditar)
+
+                    <div style="display:flex; gap:8px; margin-top:10px;">
+
+                        {{-- EDITAR --}}
+
+                        <button
+                            type="button"
+                            onclick="toggleForm('editar-movimiento-{{ $movimiento->id }}')"
+                            class="exp-btn exp-btn-yellow">
+
+                            ✏️ Editar
+
+                        </button>
 
 
-                <button
-                    type="submit"
-                    class="exp-btn exp-btn-blue"
-                    style="margin-top:10px;">
+                        {{-- ELIMINAR --}}
 
-                    Guardar Movimiento
+                        <form
+                            method="POST"
+                            action="{{ route('movimientos.destroy', $movimiento->id) }}"
+                            onsubmit="return confirm('¿Está seguro de eliminar este movimiento?');">
 
-                </button>
+                            @csrf
+                            @method('DELETE')
 
-            </form>
+                            <button
+                                type="submit"
+                                class="exp-btn exp-btn-red">
 
+                                🗑️ Eliminar
 
-            <div style="margin-top:18px;">
+                            </button>
 
-                @forelse($expedienteSeleccionado->movimientos->sortByDesc('fecha') as $movimiento)
-
-                    <div class="exp-list-item">
-
-                        <strong>
-                            {{ $movimiento->fecha }}
-                        </strong>
-
-                        <div style="margin-top:5px;">
-                            {{ $movimiento->descripcion }}
-                        </div>
-
-
-                    <form method="POST"
-      action="{{ route('movimientos.destroy', $movimiento->id) }}"
-      style="display:inline;"
-      onsubmit="return confirm('¿Está seguro de eliminar este movimiento?');">
-    @csrf
-    @method('DELETE')
-
-    <button type="submit" class="exp-btn exp-btn-red">
-        Eliminar
-    </button>
-</form>
+                        </form>
 
                     </div>
-                    
 
-                @empty
 
-                    <div style="opacity:.6;">
-                        No hay movimientos registrados.
+                    {{-- =========================
+                         FORMULARIO EDITAR
+                    ========================== --}}
+
+                    <div
+                        id="editar-movimiento-{{ $movimiento->id }}"
+                        class="hidden"
+                        style="margin-top:12px;">
+
+                        <form
+                            method="POST"
+                            action="{{ route('movimientos.update', $movimiento->id) }}">
+
+                            @csrf
+                            @method('PUT')
+
+
+                            <div class="exp-form-grid">
+
+                                <input
+                                    type="date"
+                                    name="fecha"
+                                    value="{{ $movimiento->fecha }}"
+                                    required
+                                    class="exp-input">
+
+
+                            </div>
+
+
+                            <textarea
+                                name="descripcion"
+                                required
+                                class="exp-textarea"
+                                style="margin-top:10px;"
+                                rows="3">{{ $movimiento->descripcion }}</textarea>
+
+
+                            <div style="display:flex; gap:8px; margin-top:10px;">
+
+                                <button
+                                    type="submit"
+                                    class="exp-btn exp-btn-blue">
+
+                                    💾 Guardar cambios
+
+                                </button>
+
+
+                                <button
+                                    type="button"
+                                    onclick="toggleForm('editar-movimiento-{{ $movimiento->id }}')"
+                                    class="exp-btn exp-btn-gray">
+
+                                    Cancelar
+
+                                </button>
+
+                            </div>
+
+                        </form>
+
                     </div>
 
-                @endforelse
+                @endif
 
             </div>
 
-        </div>
+
+        @empty
+
+            <div style="opacity:.6;">
+                No hay movimientos registrados.
+            </div>
+
+        @endforelse
+
+    </div>
+
+</div>
 
 
         {{-- =================================================

@@ -28,11 +28,5 @@ class Document extends Model
     );
 }
 
-public function notas()
-{
-    return $this->morphMany(
-        Note::class,
-        'notable'
-    );
-}
+
 }
