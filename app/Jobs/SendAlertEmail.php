@@ -48,60 +48,27 @@ class SendAlertEmail implements ShouldQueue
             |--------------------------------------------------------------------------
             */
 
-            if (!empty($alerta->metadata)) {
+    if (!empty($alerta->metadata)) {
 
-                $metadata = is_string($alerta->metadata)
-                    ? json_decode($alerta->metadata, true)
-                    : $alerta->metadata;
+    $metadata = is_string($alerta->metadata)
+        ? json_decode($alerta->metadata, true)
+        : $alerta->metadata;
 
-                if (
-                    is_array($metadata)
-                    && !empty($metadata['referencia'])
-                    && isset($metadata['valor'])
-                    && $metadata['valor'] !== ''
-                ) {
+    if (
+        is_array($metadata)
+        && !empty($metadata['referencia'])
+        && isset($metadata['valor'])
+        && $metadata['valor'] !== ''
+    ) {
 
-                    $nombreReferencia =
-                        $metadata['referencia'];
+        $valorReferencia = $metadata['valor'];
 
-                    $valorReferencia =
-                        $metadata['valor'];
-
-                    /*
-                    |--------------------------------------------------------------------------
-                    | Convertir nombres técnicos a nombres amigables
-                    |--------------------------------------------------------------------------
-                    */
-
-                    $nombreReferencia = match ($nombreReferencia) {
-
-                        'matricula' =>
-                            'Matrícula',
-
-                        'codigo' =>
-                            'Código',
-
-                        'identificador_tributario' =>
-                            'Identificador tributario',
-
-                        default =>
-                            ucfirst(
-                                str_replace(
-                                    '_',
-                                    ' ',
-                                    $nombreReferencia
-                                )
-                            ),
-                    };
-
-                    $asunto =
-                        $asunto
-                        . ' | '
-                        . $nombreReferencia
-                        . ': '
-                        . $valorReferencia;
-                }
-            }
+        $asunto =
+            $asunto
+            . ' | '
+            . $valorReferencia;
+    }
+}
 
 
             /*
