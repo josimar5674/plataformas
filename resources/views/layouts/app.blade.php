@@ -10,7 +10,8 @@
 
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>Portafolio Inversión</title>
+        <title>Plataformas</title>
+            <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
 
     @vite([
     'resources/css/app.css',
