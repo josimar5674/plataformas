@@ -69,6 +69,42 @@
         </div>
 
 
+        <!-- CONTRASEÑA -->
+<div class="form-group">
+
+    <label class="form-label">
+        Nueva Contraseña
+    </label>
+
+    <input
+        type="password"
+        name="password"
+        class="form-control"
+        autocomplete="new-password"
+        placeholder="Dejar vacío para conservar la actual"
+    >
+
+</div>
+
+
+<!-- CONFIRMAR CONTRASEÑA -->
+<div class="form-group">
+
+    <label class="form-label">
+        Confirmar Nueva Contraseña
+    </label>
+
+    <input
+        type="password"
+        name="password_confirmation"
+        class="form-control"
+        autocomplete="new-password"
+        placeholder="Repita la nueva contraseña"
+    >
+
+</div>
+
+
         <!-- ROL -->
         <div class="form-group">
 

@@ -106,16 +106,16 @@ class UserController extends Controller
             'name' => 'required',
 
             'email' =>
-                'required|email|unique:users,email',
+            'required|email|unique:users,email',
 
             'password' =>
-                'required|min:6',
+            'required|min:6',
 
             'role' =>
-                'required',
+            'required',
 
             'estado' =>
-                'required',
+            'required',
 
         ]);
 
@@ -129,21 +129,21 @@ class UserController extends Controller
         $usuario = User::create([
 
             'name' =>
-                $request->name,
+            $request->name,
 
             'email' =>
-                $request->email,
+            $request->email,
 
             'password' =>
-                Hash::make(
-                    $request->password
-                ),
+            Hash::make(
+                $request->password
+            ),
 
             'role' =>
-                $request->role,
+            $request->role,
 
             'estado' =>
-                $request->estado,
+            $request->estado,
 
         ]);
 
@@ -154,8 +154,7 @@ class UserController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        if ($request->role == 'user')
-        {
+        if ($request->role == 'user') {
 
             /*
             |--------------------------------------------------------------------------
@@ -163,30 +162,28 @@ class UserController extends Controller
             |--------------------------------------------------------------------------
             */
 
-            if ($request->has('inversiones'))
-            {
+            if ($request->has('inversiones')) {
 
                 foreach (
                     $request->inversiones
                     as $inversionId
-                )
-                {
+                ) {
 
                     DB::table(
                         'user_inversion'
                     )->insert([
 
                         'user_id' =>
-                            $usuario->id,
+                        $usuario->id,
 
                         'inversion_id' =>
-                            $inversionId,
+                        $inversionId,
 
                         'created_at' =>
-                            now(),
+                        now(),
 
                         'updated_at' =>
-                            now(),
+                        now(),
 
                     ]);
 
@@ -202,69 +199,67 @@ class UserController extends Controller
                     )->insert([
 
                         'user_id' =>
-                            $usuario->id,
+                        $usuario->id,
 
                         'inversion_id' =>
-                            $inversionId,
+                        $inversionId,
 
                         'avaluos' =>
-                            isset(
-                                $request
-                                    ->permisos[$inversionId]['avaluos']
-                            ),
+                        isset(
+                            $request
+                                ->permisos[$inversionId]['avaluos']
+                        ),
 
                         'activos' =>
-                            isset(
-                                $request
-                                    ->permisos[$inversionId]['activos']
-                            ),
+                        isset(
+                            $request
+                                ->permisos[$inversionId]['activos']
+                        ),
 
                         'servicios' =>
-                            isset(
-                                $request
-                                    ->permisos[$inversionId]['servicios']
-                            ),
+                        isset(
+                            $request
+                                ->permisos[$inversionId]['servicios']
+                        ),
 
                         'comercial' =>
-                            isset(
-                                $request
-                                    ->permisos[$inversionId]['comercial']
-                            ),
+                        isset(
+                            $request
+                                ->permisos[$inversionId]['comercial']
+                        ),
 
                         'entidades' =>
-                            isset(
-                                $request
-                                    ->permisos[$inversionId]['entidades']
-                            ),
+                        isset(
+                            $request
+                                ->permisos[$inversionId]['entidades']
+                        ),
 
                         'estado_resultados' =>
-                            isset(
-                                $request
-                                    ->permisos[$inversionId]['estado_resultados']
-                            ),
+                        isset(
+                            $request
+                                ->permisos[$inversionId]['estado_resultados']
+                        ),
 
                         'activos_registrales' =>
-                            isset(
-                                $request
-                                    ->permisos[$inversionId]['activos_registrales']
-                            ),
+                        isset(
+                            $request
+                                ->permisos[$inversionId]['activos_registrales']
+                        ),
 
                         'bitacoras' =>
-                            isset(
-                                $request
-                                    ->permisos[$inversionId]['bitacoras']
-                            ),
+                        isset(
+                            $request
+                                ->permisos[$inversionId]['bitacoras']
+                        ),
 
                         'created_at' =>
-                            now(),
+                        now(),
 
                         'updated_at' =>
-                            now(),
+                        now(),
 
                     ]);
-
                 }
-
             }
 
 
@@ -274,35 +269,31 @@ class UserController extends Controller
             |--------------------------------------------------------------------------
             */
 
-            if ($request->has('business_customers'))
-            {
+            if ($request->has('business_customers')) {
 
                 foreach (
                     $request->business_customers
                     as $businessCustomerId
-                )
-                {
+                ) {
 
                     DB::table(
                         'user_business_customer'
                     )->insert([
 
                         'user_id' =>
-                            $usuario->id,
+                        $usuario->id,
 
                         'business_customer_id' =>
-                            $businessCustomerId,
+                        $businessCustomerId,
 
                         'created_at' =>
-                            now(),
+                        now(),
 
                         'updated_at' =>
-                            now(),
+                        now(),
 
                     ]);
-
                 }
-
             }
 
 
@@ -312,35 +303,31 @@ class UserController extends Controller
             |--------------------------------------------------------------------------
             */
 
-            if ($request->has('entidades'))
-            {
+            if ($request->has('entidades')) {
 
                 foreach (
                     $request->entidades
                     as $entidadId
-                )
-                {
+                ) {
 
                     DB::table(
                         'user_entidad'
                     )->insert([
 
                         'user_id' =>
-                            $usuario->id,
+                        $usuario->id,
 
                         'entidad_id' =>
-                            $entidadId,
+                        $entidadId,
 
                         'created_at' =>
-                            now(),
+                        now(),
 
                         'updated_at' =>
-                            now(),
+                        now(),
 
                     ]);
-
                 }
-
             }
 
 
@@ -350,37 +337,32 @@ class UserController extends Controller
             |--------------------------------------------------------------------------
             */
 
-            if ($request->has('clientes'))
-            {
+            if ($request->has('clientes')) {
 
                 foreach (
                     $request->clientes
                     as $clienteId
-                )
-                {
+                ) {
 
                     DB::table(
                         'user_cliente'
                     )->insert([
 
                         'user_id' =>
-                            $usuario->id,
+                        $usuario->id,
 
                         'cliente_id' =>
-                            $clienteId,
+                        $clienteId,
 
                         'created_at' =>
-                            now(),
+                        now(),
 
                         'updated_at' =>
-                            now(),
+                        now(),
 
                     ]);
-
                 }
-
             }
-
         }
 
 
@@ -588,28 +570,30 @@ class UserController extends Controller
     public function update(
         Request $request,
         $id
-    )
-    {
+    ) {
 
         $usuario =
             User::findOrFail($id);
 
 
-    $request->validate([
+        $request->validate([
 
-    'name' =>
-    'required|string|max:255|unique:users,name,' . $id,
+            'name' =>
+            'required|string|max:255|unique:users,name,' . $id,
 
-    'email' =>
-        'required|email',
+            'email' =>
+            'required|email',
 
-    'role' =>
-        'required',
+            'role' =>
+            'required',
 
-    'estado' =>
-        'required',
+            'estado' =>
+            'required',
+            
+            'password' =>
+            'nullable|string|min:8|confirmed',
 
-]);
+        ]);
 
         /*
         |--------------------------------------------------------------------------
@@ -617,18 +601,36 @@ class UserController extends Controller
         |--------------------------------------------------------------------------
         */
 
-    $usuario->name =
+        $usuario->name =
 
-    $request->name;
+            $request->name;
 
-$usuario->email =
-    $request->email;
+        $usuario->email =
+            $request->email;
 
-$usuario->role =
-    $request->role;
+        $usuario->role =
+            $request->role;
 
-$usuario->estado =
-    $request->estado;
+        $usuario->estado =
+            $request->estado;
+
+            /*
+
+            |--------------------------------------------------------------------------
+
+            | CAMBIAR CONTRASEÑA
+
+            |--------------------------------------------------------------------------
+
+            */
+
+            if ($request->filled('password')) {
+
+                $usuario->password =
+
+                    $request->password;
+
+            }
 
         $usuario->save();
 
@@ -642,11 +644,11 @@ $usuario->estado =
         DB::table(
             'user_inversion'
         )
-        ->where(
-            'user_id',
-            $usuario->id
-        )
-        ->delete();
+            ->where(
+                'user_id',
+                $usuario->id
+            )
+            ->delete();
 
 
         /*
@@ -658,11 +660,11 @@ $usuario->estado =
         DB::table(
             'user_inversion_modulos'
         )
-        ->where(
-            'user_id',
-            $usuario->id
-        )
-        ->delete();
+            ->where(
+                'user_id',
+                $usuario->id
+            )
+            ->delete();
 
 
         /*
@@ -674,11 +676,11 @@ $usuario->estado =
         DB::table(
             'user_business_customer'
         )
-        ->where(
-            'user_id',
-            $usuario->id
-        )
-        ->delete();
+            ->where(
+                'user_id',
+                $usuario->id
+            )
+            ->delete();
 
 
         /*
@@ -690,11 +692,11 @@ $usuario->estado =
         DB::table(
             'user_entidad'
         )
-        ->where(
-            'user_id',
-            $usuario->id
-        )
-        ->delete();
+            ->where(
+                'user_id',
+                $usuario->id
+            )
+            ->delete();
 
 
         /*
@@ -706,11 +708,11 @@ $usuario->estado =
         DB::table(
             'user_cliente'
         )
-        ->where(
-            'user_id',
-            $usuario->id
-        )
-        ->delete();
+            ->where(
+                'user_id',
+                $usuario->id
+            )
+            ->delete();
 
 
         /*
@@ -719,8 +721,7 @@ $usuario->estado =
         |--------------------------------------------------------------------------
         */
 
-        if ($request->role == 'user')
-        {
+        if ($request->role == 'user') {
 
             /*
             |--------------------------------------------------------------------------
@@ -728,14 +729,12 @@ $usuario->estado =
             |--------------------------------------------------------------------------
             */
 
-            if ($request->has('inversiones'))
-            {
+            if ($request->has('inversiones')) {
 
                 foreach (
                     $request->inversiones
                     as $inversionId
-                )
-                {
+                ) {
 
                     /*
                     |--------------------------------------------------------------------------
@@ -748,16 +747,16 @@ $usuario->estado =
                     )->insert([
 
                         'user_id' =>
-                            $usuario->id,
+                        $usuario->id,
 
                         'inversion_id' =>
-                            $inversionId,
+                        $inversionId,
 
                         'created_at' =>
-                            now(),
+                        now(),
 
                         'updated_at' =>
-                            now(),
+                        now(),
 
                     ]);
 
@@ -773,69 +772,67 @@ $usuario->estado =
                     )->insert([
 
                         'user_id' =>
-                            $usuario->id,
+                        $usuario->id,
 
                         'inversion_id' =>
-                            $inversionId,
+                        $inversionId,
 
                         'avaluos' =>
-                            isset(
-                                $request
-                                    ->permisos[$inversionId]['avaluos']
-                            ),
+                        isset(
+                            $request
+                                ->permisos[$inversionId]['avaluos']
+                        ),
 
                         'activos' =>
-                            isset(
-                                $request
-                                    ->permisos[$inversionId]['activos']
-                            ),
+                        isset(
+                            $request
+                                ->permisos[$inversionId]['activos']
+                        ),
 
                         'servicios' =>
-                            isset(
-                                $request
-                                    ->permisos[$inversionId]['servicios']
-                            ),
+                        isset(
+                            $request
+                                ->permisos[$inversionId]['servicios']
+                        ),
 
                         'comercial' =>
-                            isset(
-                                $request
-                                    ->permisos[$inversionId]['comercial']
-                            ),
+                        isset(
+                            $request
+                                ->permisos[$inversionId]['comercial']
+                        ),
 
                         'entidades' =>
-                            isset(
-                                $request
-                                    ->permisos[$inversionId]['entidades']
-                            ),
+                        isset(
+                            $request
+                                ->permisos[$inversionId]['entidades']
+                        ),
 
                         'estado_resultados' =>
-                            isset(
-                                $request
-                                    ->permisos[$inversionId]['estado_resultados']
-                            ),
+                        isset(
+                            $request
+                                ->permisos[$inversionId]['estado_resultados']
+                        ),
 
                         'activos_registrales' =>
-                            isset(
-                                $request
-                                    ->permisos[$inversionId]['activos_registrales']
-                            ),
+                        isset(
+                            $request
+                                ->permisos[$inversionId]['activos_registrales']
+                        ),
 
                         'bitacoras' =>
-                            isset(
-                                $request
-                                    ->permisos[$inversionId]['bitacoras']
-                            ),
+                        isset(
+                            $request
+                                ->permisos[$inversionId]['bitacoras']
+                        ),
 
                         'created_at' =>
-                            now(),
+                        now(),
 
                         'updated_at' =>
-                            now(),
+                        now(),
 
                     ]);
-
                 }
-
             }
 
 
@@ -845,35 +842,31 @@ $usuario->estado =
             |--------------------------------------------------------------------------
             */
 
-            if ($request->has('business_customers'))
-            {
+            if ($request->has('business_customers')) {
 
                 foreach (
                     $request->business_customers
                     as $businessCustomerId
-                )
-                {
+                ) {
 
                     DB::table(
                         'user_business_customer'
                     )->insert([
 
                         'user_id' =>
-                            $usuario->id,
+                        $usuario->id,
 
                         'business_customer_id' =>
-                            $businessCustomerId,
+                        $businessCustomerId,
 
                         'created_at' =>
-                            now(),
+                        now(),
 
                         'updated_at' =>
-                            now(),
+                        now(),
 
                     ]);
-
                 }
-
             }
 
 
@@ -883,35 +876,31 @@ $usuario->estado =
             |--------------------------------------------------------------------------
             */
 
-            if ($request->has('entidades'))
-            {
+            if ($request->has('entidades')) {
 
                 foreach (
                     $request->entidades
                     as $entidadId
-                )
-                {
+                ) {
 
                     DB::table(
                         'user_entidad'
                     )->insert([
 
                         'user_id' =>
-                            $usuario->id,
+                        $usuario->id,
 
                         'entidad_id' =>
-                            $entidadId,
+                        $entidadId,
 
                         'created_at' =>
-                            now(),
+                        now(),
 
                         'updated_at' =>
-                            now(),
+                        now(),
 
                     ]);
-
                 }
-
             }
 
 
@@ -921,37 +910,32 @@ $usuario->estado =
             |--------------------------------------------------------------------------
             */
 
-            if ($request->has('clientes'))
-            {
+            if ($request->has('clientes')) {
 
                 foreach (
                     $request->clientes
                     as $clienteId
-                )
-                {
+                ) {
 
                     DB::table(
                         'user_cliente'
                     )->insert([
 
                         'user_id' =>
-                            $usuario->id,
+                        $usuario->id,
 
                         'cliente_id' =>
-                            $clienteId,
+                        $clienteId,
 
                         'created_at' =>
-                            now(),
+                        now(),
 
                         'updated_at' =>
-                            now(),
+                        now(),
 
                     ]);
-
                 }
-
             }
-
         }
 
 
