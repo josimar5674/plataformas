@@ -133,6 +133,40 @@
 
         </div>
 
+
+    <!-- ================================================= -->
+    <!-- Estados -->
+    <!-- ================================================= -->
+
+
+        <div class="form-group">
+
+            <label class="form-label">
+                Estado
+            </label>
+
+
+            <select name="estado"
+                    class="form-control">
+
+                <option value="1"
+                    {{ $usuario->estado ? 'selected' : '' }}>
+
+                    Activo
+
+                </option>
+
+                <option value="0"
+                    {{ !$usuario->estado ? 'selected' : '' }}>
+
+                    Inactivo
+
+                </option>
+
+            </select>
+
+        </div>
+
 <!-- ===================================================== -->
 <!-- PERMISOS -->
 <!-- ===================================================== -->
@@ -198,6 +232,15 @@
 
             💼 Clientes
 
+        </button>
+
+        <button
+                type="button"
+                id="tabFacturas"
+                class="permission-tab"
+                onclick="mostrarPermisos('facturas')"
+            >
+                Facturas
         </button>
 
     </div>
@@ -845,40 +888,79 @@
 
 </div>
 
+<!-- FACTURAS -->
 
+<div id="permisos-facturas" style="display:none;">
 
-    <!-- ================================================= -->
-    <!-- Estados -->
-    <!-- ================================================= -->
+    <div class="form-group">
 
+        <label class="form-label">
+            Tipos de facturas permitidos
+        </label>
 
-        <div class="form-group">
+        <div style="
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+            margin-top: 15px;
+        ">
 
-            <label class="form-label">
-                Estado
-            </label>
+            @forelse($tiposFacturas as $tipo)
 
+                <label style="
+                    display: flex !important;
+                    align-items: center !important;
+                    justify-content: flex-start !important;
+                    gap: 12px !important;
+                    width: 100% !important;
+                    box-sizing: border-box !important;
+                    padding: 14px 16px !important;
+                    border: 1px solid var(--border) !important;
+                    border-radius: 10px !important;
+                    background: var(--surface) !important;
+                    cursor: pointer !important;
+                    margin: 0 !important;
+                ">
 
-            <select name="estado"
-                    class="form-control">
+                    <input
+                        type="checkbox"
+                        name="tipos_facturas[]"
+                        value="{{ $tipo->id }}"
+                        {{ in_array($tipo->id, $tiposFacturasUsuario) ? 'checked' : '' }}
+                        style="
+                            flex: 0 0 auto !important;
+                            width: 16px !important;
+                            height: 16px !important;
+                            margin: 0 !important;
+                        "
+                    >
 
-                <option value="1"
-                    {{ $usuario->estado ? 'selected' : '' }}>
+                    <span style="
+                        flex: 1;
+                        min-width: 0;
+                        text-align: left;
+                    ">
+                        {{ $tipo->name }}
+                    </span>
 
-                    Activo
+                </label>
 
-                </option>
+            @empty
 
-                <option value="0"
-                    {{ !$usuario->estado ? 'selected' : '' }}>
+                <p style="color: var(--text-secondary);">
+                    No hay tipos de facturas activos en Configuraciones.
+                </p>
 
-                    Inactivo
-
-                </option>
-
-            </select>
+            @endforelse
 
         </div>
+
+    </div>
+
+</div>
+
+
+
 
 
         <!-- ===================================================== -->
@@ -926,99 +1008,49 @@
 
 function mostrarPermisos(tipo)
 {
-    console.log('Pestaña seleccionada:', tipo);
-
     const tipos = [
         'inversiones',
         'clientes',
         'entidades',
-        'businessCustomers'
+        'businessCustomers',
+        'facturas'
     ];
 
-    /*
-    |--------------------------------------------------------------------------
-    | OCULTAR TODOS LOS PANELES
-    |--------------------------------------------------------------------------
-    */
-
+    // Ocultar todos los paneles
     tipos.forEach(function(nombre) {
-
-        const panel =
-            document.getElementById(
-                'permisos-' + nombre
-            );
+        const panel = document.getElementById('permisos-' + nombre);
 
         if (panel) {
             panel.style.display = 'none';
         }
-
     });
 
+    // Desactivar todas las pestañas
+    document.querySelectorAll('.permission-tab').forEach(function(tab) {
+        tab.classList.remove('active');
+    });
 
-    /*
-    |--------------------------------------------------------------------------
-    | QUITAR ACTIVE DE TODAS LAS PESTAÑAS
-    |--------------------------------------------------------------------------
-    */
+    // Mostrar el panel seleccionado
+    const panelSeleccionado = document.getElementById('permisos-' + tipo);
 
-    document
-        .querySelectorAll('.permission-tab')
-        .forEach(function(tab) {
-
-            tab.classList.remove('active');
-
-        });
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | MOSTRAR PANEL SELECCIONADO
-    |--------------------------------------------------------------------------
-    */
-
-    const panel =
-        document.getElementById(
-            'permisos-' + tipo
-        );
-
-    if (panel) {
-
-        panel.style.display = 'block';
-
+    if (panelSeleccionado) {
+        panelSeleccionado.style.display = 'block';
     }
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | ACTIVAR PESTAÑA
-    |--------------------------------------------------------------------------
-    */
-
+    // Activar la pestaña seleccionada
     const botones = {
-
         inversiones: 'tabInversiones',
-
         clientes: 'tabClientes',
-
         entidades: 'tabEntidades',
-
-        businessCustomers:
-            'tabBusinessCustomers'
-
+        businessCustomers: 'tabBusinessCustomers',
+        facturas: 'tabFacturas'
     };
 
-
-    const boton =
-        document.getElementById(
-            botones[tipo]
-        );
+    const boton = document.getElementById(botones[tipo]);
 
     if (boton) {
-
         boton.classList.add('active');
-
     }
-
 }
 
 </script>

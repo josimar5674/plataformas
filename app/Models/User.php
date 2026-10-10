@@ -11,14 +11,15 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\DB;
 use App\Models\Alert;
-
+use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable(['name', 'email', 'password', 'role'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable;
 
     /**
      * Get the attributes that should be cast.
@@ -100,4 +101,31 @@ public function clientes()
         'user_cliente'
     )->withTimestamps();
 }
+
+/**
+ * PIN de activación generados por este usuario administrador.
+ */
+public function generatedActivationPins(): HasMany
+{
+    return $this->hasMany(DeviceActivationPin::class, 'generated_by');
+}
+
+/**
+ * Dispositivos confiables asociados a este usuario.
+ */
+public function trustedDevices(): HasMany
+{
+    return $this->hasMany(TrustedDevice::class);
+}
+
+public function tiposFacturas()
+{
+    return $this->belongsToMany(
+        ConfigurationOption::class,
+        'user_invoice_type',
+        'user_id',
+        'configuration_option_id'
+    )->withTimestamps();
+}
+
 }

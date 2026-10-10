@@ -981,4 +981,72 @@ textarea{
 
 
 
+.menu-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.menu-dropdown-content {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 190px;
+    background: var(--card-bg, #ffffff);
+    border: 1px solid var(--border-color, #e5e7eb);
+    border-radius: 8px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    z-index: 1000;
+    padding: 6px;
+}
+
+.menu-dropdown:hover .menu-dropdown-content,
+.menu-dropdown:focus-within .menu-dropdown-content {
+    display: block;
+}
+
+.menu-dropdown-content a {
+    display: block;
+    padding: 10px 12px;
+    border-radius: 5px;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.menu-dropdown-content a:hover {
+    background: var(--hover-bg, #f3f4f6);
+}
+
+/* Factura pendiente de revisión */
+.btn-pending {
+    background: #fef3c7;
+    color: #92400e;
+    border: 1px solid #f59e0b;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-pending:hover {
+    background: #fde68a;
+}
+
+/* Factura revisada */
+.btn-reviewed {
+    background: #dcfce7;
+    color: #166534;
+    border: 1px solid #86efac;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-reviewed:hover {
+    background: #bbf7d0;
+}
+
 </style>

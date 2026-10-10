@@ -27,6 +27,9 @@ use App\Http\Controllers\ImagenController;
 use App\Http\Controllers\ExpedienteController;
 use App\Http\Controllers\SujetoController;
 use App\Http\Controllers\MovimientoController;
+use App\Http\Controllers\Admin\DeviceActivationController;
+use App\Http\Controllers\InvoiceTypeController;
+use App\Http\Controllers\InvoiceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -457,6 +460,8 @@ Route::middleware('admin')->group(function () {
         [UserController::class, 'update']
     );
 
+    
+
 });
 
 
@@ -698,4 +703,73 @@ Route::patch(
 Route::put('/movimientos/{movimiento}', [MovimientoController::class, 'update'])
     ->name('movimientos.update');
 
+
+
+
+Route::post(
+    '/configuraciones/tipos-factura',
+    [InvoiceTypeController::class, 'store']
+)->name('invoice-types.store');
+
+Route::patch(
+    '/configuraciones/tipos-factura/{invoiceType}/toggle',
+    [InvoiceTypeController::class, 'toggle']
+)->name('invoice-types.toggle');
+
+
+
+
+    Route::get('/facturas', [InvoiceController::class, 'index'])
+        ->name('invoices.index');
+
+    Route::get('/facturas/{tipo}', [InvoiceController::class, 'show'])
+        ->name('invoices.show');
+
+    Route::patch('/facturas/{invoice}/revisar', [InvoiceController::class, 'toggleReviewed'])
+        ->name('invoices.toggle-reviewed');
+Route::middleware('auth')->group(function () {
+
+    Route::get('/facturas/{invoice}/procesar', [
+
+        InvoiceController::class,
+
+        'edit'
+
+    ])->name('invoices.edit');
+
+    Route::put('/facturas/{invoice}/procesar', [
+
+        InvoiceController::class,
+
+        'update'
+
+    ])->name('invoices.update');
+
+});
+
+}); // termina el ouauth
+
+
+/*
+|--------------------------------------------------------------------------
+| PIN de acceso en la app
+|--------------------------------------------------------------------------
+*/
+
+
+Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
+    Route::get(
+        '/device-activation',
+        [DeviceActivationController::class, 'index']
+    )->name('device-activation.index');
+
+    Route::post(
+        '/device-activation/generate',
+        [DeviceActivationController::class, 'generate']
+    )->name('device-activation.generate');
+
+    Route::delete(
+    '/device-activation/{device}',
+    [\App\Http\Controllers\Admin\DeviceActivationController::class, 'destroy']
+)->name('device-activation.destroy');
 });

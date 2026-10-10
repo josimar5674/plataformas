@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-
+use App\Models\Invoice;
 class ConfigurationOption extends Model
 {
     protected $fillable = [
@@ -43,4 +43,9 @@ class ConfigurationOption extends Model
             'catalog_id'
         );
     }
+
+    public function invoices()
+{
+    return $this->hasMany(Invoice::class);
+}
 }

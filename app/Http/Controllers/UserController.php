@@ -10,6 +10,7 @@ use App\Models\Entidad;
 use App\Models\Cliente;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use App\Models\ConfigurationCatalog;
 
 class UserController extends Controller
 {
@@ -530,6 +531,28 @@ class UserController extends Controller
                 'cliente_id'
             )
             ->toArray();
+  /*
+        |--------------------------------------------------------------------------
+        | Catalogoz de Tipos de Facturas
+        |--------------------------------------------------------------------------
+        */
+
+            $catalogoFacturas = ConfigurationCatalog::where(
+                'name',
+                'Tipos de facturas'
+            )->first();
+
+            $tiposFacturas = $catalogoFacturas
+                ? $catalogoFacturas->options()
+                    ->where('active', true)
+                    ->orderBy('name')
+                    ->get()
+                : collect();
+
+            $tiposFacturasUsuario = DB::table('user_invoice_type')
+                ->where('user_id', $usuario->id)
+                ->pluck('configuration_option_id')
+                ->toArray();
 
 
         return view(
@@ -554,7 +577,10 @@ class UserController extends Controller
 
                 'clientes',
 
-                'clientesUsuario'
+                'clientesUsuario',
+                'tiposFacturas',
+
+                'tiposFacturasUsuario',
 
             )
         );
@@ -633,6 +659,11 @@ class UserController extends Controller
             }
 
         $usuario->save();
+
+
+        DB::table('user_invoice_type')
+                ->where('user_id', $usuario->id)
+                ->delete();
 
 
         /*
@@ -722,6 +753,45 @@ class UserController extends Controller
         */
 
         if ($request->role == 'user') {
+
+
+            $facturasSeleccionadas = $request->input('tipos_facturas', []);
+
+                $request->validate([
+                    'tipos_facturas.*' => [
+                        'integer',
+                        'distinct',
+                        'exists:configuration_options,id',
+                    ],
+                ]);
+
+                $opcionesFacturasValidas = DB::table('configuration_options')
+                    ->join(
+                        'configuration_catalogs',
+                        'configuration_catalogs.id',
+                        '=',
+                        'configuration_options.catalog_id'
+                    )
+                    ->where('configuration_catalogs.name', 'Tipos de facturas')
+                    ->where('configuration_catalogs.active', true)
+                    ->where('configuration_options.active', true)
+                    ->pluck('configuration_options.id')
+                    ->map(fn ($id) => (int) $id)
+                    ->all();
+
+                foreach ($facturasSeleccionadas as $opcionId) {
+                    if (!in_array((int) $opcionId, $opcionesFacturasValidas, true)) {
+                        continue;
+                    }
+
+                    DB::table('user_invoice_type')->insert([
+                        'user_id' => $usuario->id,
+                        'configuration_option_id' => $opcionId,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                }
+            
 
             /*
             |--------------------------------------------------------------------------
@@ -937,6 +1007,8 @@ class UserController extends Controller
                 }
             }
         }
+
+
 
 
         return redirect('/usuarios')

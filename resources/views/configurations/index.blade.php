@@ -84,6 +84,14 @@
     📧 Google Workspace
 </a>
 
+<a
+    href="/configuraciones?section=device-activation"
+    class="{{ request('section') === 'device-activation' ? 'active' : '' }}"
+>
+    📱 Activación de dispositivos
+</a>
+
+
 
         @forelse($catalogs as $catalogItem)
 
@@ -122,17 +130,15 @@
 <div class="configuration-content">
 
 
-    @if(request('section') === 'google-workspace')
+ @if(request('section') === 'google-workspace')
 
+    @include('configurations.google-workspace')
 
-        <!-- ========================= -->
-        <!-- GOOGLE WORKSPACE -->
-        <!-- ========================= -->
+@elseif(request('section') === 'device-activation')
 
-        @include('configurations.google-workspace')
+    @include('configurations.device-activation')
 
-
-    @elseif($catalogSelected)
+@elseif($catalogSelected)
 
 
         <!-- ========================= -->

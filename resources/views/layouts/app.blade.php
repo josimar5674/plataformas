@@ -102,6 +102,47 @@
                 Expedientes
             </a>
 
+            @auth
+    @php
+        $catalogoFacturas = \App\Models\ConfigurationCatalog::where(
+            'name',
+            'Tipos de facturas'
+        )->first();
+
+        $tiposFacturasMenu = collect();
+
+        if ($catalogoFacturas) {
+            $tiposFacturasMenu = $catalogoFacturas->options()
+                ->where('active', true)
+                ->when(
+                    auth()->user()->role !== 'admin',
+                    fn ($query) => $query->whereIn(
+                        'id',
+                        auth()->user()->tiposFacturas()->select('configuration_options.id')
+                    )
+                )
+                ->orderBy('sort_order')
+                ->get();
+        }
+    @endphp
+
+    @if($tiposFacturasMenu->isNotEmpty())
+        <div class="menu-dropdown">
+            <a href="{{ route('invoices.index') }}">
+                Facturas ▾
+            </a>
+
+            <div class="menu-dropdown-content">
+                @foreach($tiposFacturasMenu as $tipo)
+                    <a href="{{ route('invoices.show', \Illuminate\Support\Str::slug($tipo->name)) }}">
+                        {{ $tipo->name }}
+                    </a>
+                @endforeach
+            </div>
+        </div>
+    @endif
+@endauth
+
                 @auth
 
                 @if(auth()->user()->role === 'admin')

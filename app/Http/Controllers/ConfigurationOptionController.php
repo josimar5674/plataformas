@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use App\Models\ConfigurationCatalog;
 use App\Models\ConfigurationOption;
 use App\Models\GoogleWorkspaceSetting;
+use App\Models\TrustedDevice;
+use Illuminate\Support\Facades\Schema;
+use App\Models\InvoiceType;
 
 class ConfigurationOptionController extends Controller
 {
@@ -85,6 +88,11 @@ public function index(Request $request)
     $googleConnectedAt =
         $googleSetting?->connected_at;
 
+        $trustedDevices = TrustedDevice::with('user')
+    ->orderByDesc('last_used_at')
+    ->get();
+    
+
 
     return view(
         'configurations.index',
@@ -96,7 +104,8 @@ public function index(Request $request)
             'googleEmail',
             'googleConnected',
             'googleAccount',
-            'googleConnectedAt'
+            'googleConnectedAt',
+            'trustedDevices'
         )
     );
 }
