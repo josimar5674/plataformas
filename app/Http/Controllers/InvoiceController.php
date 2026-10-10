@@ -157,4 +157,30 @@ private function authorizeInvoiceAccess(Invoice $invoice, $user): void
         'No tienes permiso para acceder a esta factura.'
     );
 }
+/**
+ * Eliminar una factura temporalmente.
+ */
+public function destroy(Invoice $invoice)
+{
+    abort_unless(
+        auth()->user()->role === 'admin',
+        403,
+        'Solo el administrador puede eliminar facturas.'
+    );
+
+    // Eliminar la imagen asociada, si existe.
+    if ($invoice->image_path) {
+        \Illuminate\Support\Facades\Storage::disk('public')
+            ->delete($invoice->image_path);
+    }
+
+    $tipo = $invoice->type;
+
+    $invoice->delete();
+
+    return redirect()
+        ->route('invoices.show', \Illuminate\Support\Str::slug($tipo->name))
+        ->with('success', 'Factura eliminada correctamente.');
+}
+
 }

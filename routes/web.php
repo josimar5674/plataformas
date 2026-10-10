@@ -727,7 +727,9 @@ Route::patch(
 
     Route::patch('/facturas/{invoice}/revisar', [InvoiceController::class, 'toggleReviewed'])
         ->name('invoices.toggle-reviewed');
-Route::middleware('auth')->group(function () {
+
+
+
 
     Route::get('/facturas/{invoice}/procesar', [
 
@@ -745,7 +747,10 @@ Route::middleware('auth')->group(function () {
 
     ])->name('invoices.update');
 
-});
+Route::delete('/facturas/{invoice}/eliminar', [
+    InvoiceController::class,
+    'destroy'
+])->name('invoices.destroy');
 
 }); // termina el ouauth
 

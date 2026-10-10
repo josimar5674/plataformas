@@ -32,6 +32,7 @@
                 <th>Estado</th>
                 <th>Revisión</th>
                 <th>Procesamiento</th>
+                <th>Acciones</th>
                 
             </tr>
         </thead>
@@ -122,6 +123,33 @@
                             </form>
                         </form>
                     </td>
+
+                    <td onclick="event.stopPropagation();">
+    @if(auth()->user()->role === 'admin')
+        <form
+            method="POST"
+            action="{{ route('invoices.destroy', $factura) }}"
+            onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta factura? Esta acción no se puede deshacer.');"
+        >
+            @csrf
+            @method('DELETE')
+
+            <button
+                type="submit"
+                style="
+                    background:#dc2626;
+                    color:white;
+                    border:none;
+                    padding:9px 14px;
+                    border-radius:8px;
+                    cursor:pointer;
+                "
+            >
+                🗑️ Eliminar
+            </button>
+        </form>
+    @endif
+</td>
                 </tr>
             @empty
                 <tr>
