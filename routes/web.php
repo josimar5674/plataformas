@@ -30,7 +30,7 @@ use App\Http\Controllers\MovimientoController;
 use App\Http\Controllers\Admin\DeviceActivationController;
 use App\Http\Controllers\InvoiceTypeController;
 use App\Http\Controllers\InvoiceController;
-
+use App\Http\Controllers\InvoiceImageController;
 /*
 |--------------------------------------------------------------------------
 | RUTAS PROTEGIDAS
@@ -751,6 +751,10 @@ Route::delete('/facturas/{invoice}/eliminar', [
     InvoiceController::class,
     'destroy'
 ])->name('invoices.destroy');
+
+Route::get('/invoices/{invoice}/image', [InvoiceImageController::class, 'show'])
+
+    ->name('invoices.image');
 
 }); // termina el ouauth
 

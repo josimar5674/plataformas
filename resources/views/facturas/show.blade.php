@@ -51,29 +51,30 @@
                     <td>{{ $factura->provider_name }}</td>
 
                     <td>
-    @if($factura->image_path)
-        <a
-            href="{{ asset('storage/' . $factura->image_path) }}"
-            target="_blank"
-            rel="noopener noreferrer"
-            title="Abrir factura en tamaño completo"
-        >
-            <img
-                src="{{ asset('storage/' . $factura->image_path) }}"
-                alt="Factura de {{ $factura->provider_name ?? 'proveedor pendiente' }}"
-                style="
-                    width:65px;
-                    height:65px;
-                    object-fit:cover;
-                    border-radius:8px;
-                    border:1px solid var(--border);
-                    cursor:pointer;
-                "
-            >
-        </a>
-    @else
-        <span>Sin imagen</span>
-    @endif
+                    @if($factura->image_path)
+                        <a
+                            href="{{ route('invoices.image', $factura) }}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            title="Abrir factura en tamaño completo"
+                            onclick="event.stopPropagation();"
+                        >
+                            <img
+                                src="{{ route('invoices.image', $factura) }}"
+                                alt="Factura de {{ $factura->provider_name ?? 'proveedor pendiente' }}"
+                                style="
+                                    width:65px;
+                                    height:65px;
+                                    object-fit:cover;
+                                    border-radius:8px;
+                                    border:1px solid var(--border);
+                                    cursor:pointer;
+                                "
+                            >
+                        </a>
+                    @else
+                        <span>Sin imagen</span>
+                    @endif
 </td>
 
                     <td>{{ $factura->invoice_number ?? '—' }}</td>

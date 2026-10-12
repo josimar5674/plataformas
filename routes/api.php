@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\MobileAuthController;
 use App\Http\Controllers\Api\DeviceActivationController;
 use App\Http\Middleware\EnsureMobileUserIsActive;
 use App\Http\Controllers\Api\MobileInvoiceController;
+use App\Http\Controllers\Api\MobileInvoiceImageController;
 
 
 // Inicio de sesión: no requiere token previo.
@@ -45,10 +46,25 @@ Route::middleware('auth:sanctum')->group(function () {
         /*
          * Las demás API protegidas de ZHX irán aquí.
          */
-Route::post('/invoices', [
-    MobileInvoiceController::class,
-    'store'
+            Route::get('/invoices', [
+                MobileInvoiceController::class,
+                'index'
+            ]);
+
+                Route::post('/invoices', [
+                    MobileInvoiceController::class,
+                    'store'
+                ]);
+
+                Route::post('/invoices/{invoice}/image', [
+                    MobileInvoiceController::class,
+                    'updateImage'
+                ]);
+                Route::get('/invoices/{invoice}/image', [
+            MobileInvoiceImageController::class,
+            'show',
 ]);
+
         
     });
 });

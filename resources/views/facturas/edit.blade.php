@@ -36,11 +36,11 @@
 
         @if($invoice->image_path)
             <a
-                href="{{ asset('storage/'.$invoice->image_path) }}"
+                href="{{ route('invoices.image', $invoice) }}"
                 target="_blank"
             >
                 <img
-                    src="{{ asset('storage/'.$invoice->image_path) }}"
+                    src="{{ route('invoices.image', $invoice) }}"
                     alt="Factura enviada"
                     style="
                         width:100%;
