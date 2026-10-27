@@ -16,7 +16,7 @@ class FinanceIncomeController extends Controller
 {
     public function index(Request $request)
     {
-        $incomes = FinanceIncome::with(['customer', 'creator'])
+        $query = FinanceIncome::with(['customer', 'creator'])
             ->withSum('payments', 'amount_hnl')
             ->when(!$request->hasAny(['year', 'month']), fn ($q) => $q->whereYear('income_date', now()->year)->whereMonth('income_date', now()->month))
             ->when($request->filled('year'), fn ($q) => $q->whereYear('income_date', (int) $request->input('year')))
@@ -28,13 +28,22 @@ class FinanceIncomeController extends Controller
                     $sub->where('description', 'like', "%{$search}%")
                         ->orWhereHas('customer', fn ($customer) => $customer->where('nombre', 'like', "%{$search}%"));
                 });
-            })
+            });
+
+        $summary = (clone $query)->reorder()->selectRaw(
+            'COUNT(*) as count, COALESCE(SUM(total_usd), 0) as total_usd, COALESCE(SUM(total_hnl), 0) as total_hnl'
+        )->first();
+
+        $summary->paid_hnl = (float) (clone $query)->reorder()->leftJoin('finance_payments', 'finance_incomes.id', '=', 'finance_payments.finance_income_id')->sum('finance_payments.amount_hnl');
+        $summary->balance_hnl = max((float) $summary->total_hnl - $summary->paid_hnl, 0);
+
+        $incomes = (clone $query)
             ->orderByDesc('income_date')
             ->orderByDesc('id')
             ->paginate(15)
             ->withQueryString();
 
-        return view('finances.incomes.index', compact('incomes'));
+        return view('finances.incomes.index', compact('incomes', 'summary'));
     }
 
     public function create()
@@ -163,15 +172,16 @@ class FinanceIncomeController extends Controller
 
     public function destroy(FinanceIncome $income)
     {
-        if ($income->payments()->exists()) {
-            return redirect()->route('finances.incomes.show', $income)
-                ->with('error', 'No se puede eliminar un ingreso que ya tiene abonos registrados. Corrige o elimina primero sus pagos.');
-        }
+        DB::transaction(function () use ($income) {
+            // Payment rows are removed by the database's cascade when the income is deleted.
+            $income->payments()->delete();
+            $income->delete();
+        });
 
-        $income->delete();
-
-        return redirect()->route('finances.incomes.index')->with('success', 'Ingreso eliminado correctamente.');
+        return redirect()->route('finances.incomes.index')
+            ->with('success', 'Ingreso y sus abonos asociados eliminados correctamente.');
     }
+
 
     public function generateFromPreviousMonth(Request $request)
     {
