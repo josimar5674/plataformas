@@ -1,15 +1,15 @@
 <?php
 
-namespace App\\Http\\Controllers;
+namespace App\Http\Controllers;
 
-use App\\Models\\BusinessCustomer;
-use App\\Models\\FinanceExchangeRate;
-use App\\Models\\FinanceIncome;
-use App\\Models\\FinancePayment;
-use App\\Models\\FinanceTaxRate;
-use Illuminate\\Http\\Request;
-use Illuminate\\Support\\Facades\\DB;
-use Illuminate\\Validation\\ValidationException;
+use App\Models\BusinessCustomer;
+use App\Models\FinanceExchangeRate;
+use App\Models\FinanceIncome;
+use App\Models\FinancePayment;
+use App\Models\FinanceTaxRate;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class FinanceIncomeController extends Controller
 {
@@ -58,7 +58,7 @@ class FinanceIncomeController extends Controller
         ]);
 
         $taxRate = FinanceTaxRate::where('active', true)->findOrFail($data['finance_tax_rate_id']);
-        $date = \\Illuminate\\Support\\Carbon::parse($data['income_date']);
+        $date = \Illuminate\Support\Carbon::parse($data['income_date']);
         $exchangeRate = FinanceExchangeRate::where('year', $date->year)
             ->where('month', $date->month)->first();
 
