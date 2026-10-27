@@ -18,8 +18,9 @@ class FinanceIncomeController extends Controller
     {
         $incomes = FinanceIncome::with(['customer', 'creator'])
             ->withSum('payments', 'amount_hnl')
-            ->whereYear('income_date', (int) $request->input('year', now()->year))
-            ->whereMonth('income_date', (int) $request->input('month', now()->month))
+            ->when(!$request->hasAny(['year', 'month']), fn ($q) => $q->whereYear('income_date', now()->year)->whereMonth('income_date', now()->month))
+            ->when($request->filled('year'), fn ($q) => $q->whereYear('income_date', (int) $request->input('year')))
+            ->when($request->filled('month'), fn ($q) => $q->whereMonth('income_date', (int) $request->input('month')))
             ->when($request->filled('status'), fn ($q) => $q->where('status', $request->string('status')))
             ->when($request->filled('search'), function ($q) use ($request) {
                 $search = trim($request->string('search')->toString());
