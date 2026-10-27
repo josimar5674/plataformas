@@ -79,6 +79,10 @@
                     Inversiones
                 </a>
 
+                <a href="{{ route('finances.incomes.index') }}">
+                    Finanzas
+                </a>
+
                
 
                 <a href="/clientes">
