@@ -79,9 +79,16 @@
                     Inversiones
                 </a>
 
-                <a href="{{ route('finances.incomes.index') }}">
-                    Finanzas
-                </a>
+                @auth
+                    @php
+                        $permisosFinanzasMenu = auth()->user()->role === 'admin'
+                            ? (object)['ingresos' => true, 'egresos' => true, 'resumen' => true]
+                            : DB::table('user_finance_permissions')->where('user_id', auth()->id())->first();
+                    @endphp
+                    @if($permisosFinanzasMenu && ($permisosFinanzasMenu->ingresos || $permisosFinanzasMenu->egresos || $permisosFinanzasMenu->resumen))
+                        <a href="{{ route('finances.incomes.index') }}">Finanzas</a>
+                    @endif
+                @endauth
 
                
 
