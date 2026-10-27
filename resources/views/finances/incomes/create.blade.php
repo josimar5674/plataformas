@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div style="max-width:900px;margin:24px auto;padding:0 16px;">
+<div class="finance-income-create" style="max-width:900px;margin:24px auto;padding:0 16px;">
     <a href="{{ route('finances.incomes.index') }}">← Volver a ingresos</a>
     <h1 style="margin:16px 0 6px;">Registrar ingreso</h1>
     <p style="color:var(--text-secondary);">El importe base se ingresa en dólares. El sistema guarda la tasa del mes y calcula el impuesto y su equivalente en lempiras.</p>
@@ -34,6 +34,57 @@
         @if($taxRates->isEmpty())<p style="color:#b91c1c;margin-top:12px;">No hay impuestos activos configurados.</p>@endif
     </form>
 </div>
+<style>
+    .finance-income-create label {
+        display: block;
+        margin-bottom: 7px;
+        font-weight: 600;
+        font-size: 14px;
+        color: var(--text, #111827);
+    }
+    .finance-income-create .form-control {
+        display: block;
+        width: 100%;
+        min-height: 46px;
+        box-sizing: border-box;
+        padding: 10px 40px 10px 13px;
+        border: 1px solid var(--border, #d1d5db);
+        border-radius: 9px;
+        background-color: var(--surface, #fff);
+        color: var(--text, #111827);
+        font: inherit;
+        line-height: 1.4;
+        transition: border-color .15s ease, box-shadow .15s ease;
+    }
+    .finance-income-create select.form-control {
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        cursor: pointer;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 13px center;
+        background-size: 16px;
+    }
+    .finance-income-create select.form-control option {
+        background: var(--surface, #fff);
+        color: var(--text, #111827);
+    }
+    .finance-income-create .form-control:focus {
+        outline: none;
+        border-color: #6366f1;
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, .15);
+    }
+    .finance-income-create input[type="date"].form-control,
+    .finance-income-create input[type="number"].form-control {
+        padding-right: 13px;
+    }
+    @media (max-width: 600px) {
+        .finance-income-create form > div:first-of-type {
+            grid-template-columns: 1fr !important;
+        }
+    }
+</style>
 <script>
 (function () {
     const subtotal = document.getElementById('subtotal_usd');
