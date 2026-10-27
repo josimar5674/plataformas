@@ -808,7 +808,19 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
 });
 
 // FINANZAS — INGRESOS Y PAGOS
-Route::middleware('auth')->prefix('finanzas')->name('finances.')->group(function () {
+Route::middleware(['auth', function ($request, $next) {
+    $user = $request->user();
+    if ($user->role === 'admin') {
+        return $next($request);
+    }
+    $permission = \\Illuminate\\Support\\Facades\\DB::table('user_finance_permissions')
+        ->where('user_id', $user->id)
+        ->first();
+    if (!$permission || !$permission->ingresos) {
+        abort(403, 'No tienes permiso para acceder a Ingresos de Finanzas.');
+    }
+    return $next($request);
+}])->prefix('finanzas')->name('finances.')->group(function () {
     Route::get('/ingresos', [FinanceIncomeController::class, 'index'])->name('incomes.index');
     Route::get('/ingresos/crear', [FinanceIncomeController::class, 'create'])->name('incomes.create');
     Route::post('/ingresos', [FinanceIncomeController::class, 'store'])->name('incomes.store');
