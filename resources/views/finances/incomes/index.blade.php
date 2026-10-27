@@ -12,7 +12,7 @@
 
 <div style="max-width:1200px;margin:24px auto;padding:0 16px;">
     <div style="display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:22px;">
-        <div><h1 style="margin:0;">💰 Ingresos</h1><p style="color:var(--text-secondary);margin:6px 0 0;">Ingresos en USD, equivalencia en lempiras y abonos recibidos.</p></div>
+        <div><h1 style="margin:0;">Ingresos</h1><p style="color:var(--text-secondary);margin:6px 0 0;">Ingresos en USD, equivalencia en lempiras y abonos recibidos.</p></div>
         <div class="finance-income-header-actions">
             <form method="POST" action="{{ route('finances.incomes.copy-previous-month') }}" onsubmit="return confirm('Se copiarán los ingresos del mes anterior que no existan todavía en el mes actual. Quedarán pendientes y sin abonos copiados. ¿Continuar?');">@csrf<button type="submit" class="btn-secondary">⟳ Copiar mes anterior</button></form>
             <a href="{{ route('finances.incomes.create') }}" class="btn-primary-custom" style="text-decoration:none;">＋ Registrar ingreso</a>
