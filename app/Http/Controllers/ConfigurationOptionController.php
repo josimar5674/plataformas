@@ -10,6 +10,7 @@ use App\Models\TrustedDevice;
 use Illuminate\Support\Facades\Schema;
 use App\Models\InvoiceType;
 use App\Models\FinanceTaxRate;
+use App\Models\FinanceBankAccount;
 use App\Models\FinanceExchangeRate;
 
 class ConfigurationOptionController extends Controller
@@ -23,6 +24,8 @@ class ConfigurationOptionController extends Controller
 public function index(Request $request)
 {
     $catalogId = $request->catalog;
+
+    $financeBankAccounts = FinanceBankAccount::orderBy('bank_name')->orderBy('account_name')->get();
 
     $financeTaxRates = FinanceTaxRate::orderBy('sort_order')
         ->orderBy('percentage')
@@ -125,6 +128,7 @@ public function index(Request $request)
             'googleConnectedAt',
             'trustedDevices',
             'financeTaxRates',
+            'financeBankAccounts',
             'financeExchangeRates',
             'selectedYear',
             'selectedMonth',
