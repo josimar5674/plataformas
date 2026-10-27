@@ -193,8 +193,7 @@ class FinanceIncomeController extends Controller
         $skipped = 0;
         DB::transaction(function () use ($sourceIncomes, $target, $exchangeRate, &$created, &$skipped, $request) {
             foreach ($sourceIncomes as $sourceIncome) {
-                $exists = FinanceIncome::where('business_customer_id', $sourceIncome->business_customer_id)
-                    ->where('description', $sourceIncome->description)
+                $exists = FinanceIncome::where('copied_from_income_id', $sourceIncome->id)
                     ->whereYear('income_date', $target->year)
                     ->whereMonth('income_date', $target->month)->exists();
                 if ($exists) {
@@ -227,6 +226,7 @@ class FinanceIncomeController extends Controller
                     'status' => 'pending',
                     'notes' => $sourceIncome->notes,
                     'created_by' => $request->user()->id,
+                    'copied_from_income_id' => $sourceIncome->id,
                 ]);
                 $created++;
             }
