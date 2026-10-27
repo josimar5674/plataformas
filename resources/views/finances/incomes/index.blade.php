@@ -10,9 +10,6 @@
 .finance-income-header-actions a { text-decoration:none; }
 </style>
 
-@if(session('success'))<div class="alert alert-success" style="margin:16px 0;">{{ session('success') }}</div>@endif
-@if(session('error'))<div class="alert alert-danger" style="margin:16px 0;">{{ session('error') }}</div>@endif
-@if($errors->any())<div class="alert alert-danger" style="margin:16px 0;">{{ $errors->first() }}</div>@endif
 <div style="max-width:1200px;margin:24px auto;padding:0 16px;">
     <div style="display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:22px;">
         <div><h1 style="margin:0;">💰 Ingresos</h1><p style="color:var(--text-secondary);margin:6px 0 0;">Ingresos en USD, equivalencia en lempiras y abonos recibidos.</p></div>
