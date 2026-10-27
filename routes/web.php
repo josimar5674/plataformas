@@ -813,7 +813,7 @@ Route::middleware(['auth', function ($request, $next) {
     if ($user->role === 'admin') {
         return $next($request);
     }
-    $permission = \\Illuminate\\Support\\Facades\\DB::table('user_finance_permissions')
+    $permission = DB::table('user_finance_permissions')
         ->where('user_id', $user->id)
         ->first();
     if (!$permission || !$permission->ingresos) {
