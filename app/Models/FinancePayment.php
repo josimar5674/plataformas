@@ -12,6 +12,7 @@ class FinancePayment extends Model
         'payment_date',
         'amount_hnl',
         'payment_method',
+        'finance_bank_account_id',
         'reference',
         'notes',
         'received_by',
@@ -25,6 +26,11 @@ class FinancePayment extends Model
     public function income(): BelongsTo
     {
         return $this->belongsTo(FinanceIncome::class, 'finance_income_id');
+    }
+
+    public function bankAccount(): BelongsTo
+    {
+        return $this->belongsTo(FinanceBankAccount::class, 'finance_bank_account_id');
     }
 
     public function receiver(): BelongsTo
