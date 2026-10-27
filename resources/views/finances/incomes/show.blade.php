@@ -27,7 +27,8 @@
             <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;">
                 <div><label>Fecha de pago *</label><input class="form-control" type="date" name="payment_date" value="{{ old('payment_date',now()->toDateString()) }}" required></div>
                 <div><label>Importe (HNL) *</label><input class="form-control" type="number" name="amount_hnl" min="0.01" max="{{ number_format($outstanding,2,'.','') }}" step="0.01" value="{{ old('amount_hnl') }}" required></div>
-                <div><label>Forma de pago *</label><select class="form-control" name="payment_method" required><option value="">Selecciona</option>@foreach(['Efectivo','Transferencia','Tarjeta','Cheque','Otro'] as $method)<option value="{{ $method }}" @selected(old('payment_method')===$method)>{{ $method }}</option>@endforeach</select></div>
+                <div><label>Forma de pago *</label><select class="form-control" id="payment_method" name="payment_method" required><option value="">Selecciona</option>@foreach(['Efectivo','Transferencia','Tarjeta','Cheque','Otro'] as $method)<option value="{{ $method }}" @selected(old('payment_method')===$method)>{{ $method }}</option>@endforeach</select></div>
+                <div id="bank-account-field"><label>Cuenta bancaria <span id="bank-required-mark">*</span></label><select class="form-control" id="finance_bank_account_id" name="finance_bank_account_id"><option value="">Selecciona una cuenta</option>@foreach($bankAccounts as $bankAccount)<option value="{{ $bankAccount->id }}" @selected(old('finance_bank_account_id') == $bankAccount->id)>{{ $bankAccount->bank_name }} — {{ $bankAccount->account_name }} · {{ $bankAccount->account_number }} ({{ $bankAccount->currency }})</option>@endforeach</select><small style="color:var(--text-secondary);">Obligatoria si la forma de pago es transferencia.</small></div>
                 <div><label>Referencia</label><input class="form-control" name="reference" maxlength="120" value="{{ old('reference') }}"></div>
             </div>
             <div style="margin-top:14px;"><label>Notas</label><textarea class="form-control" name="notes" rows="2">{{ old('notes') }}</textarea></div>
@@ -40,9 +41,24 @@
         <div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;min-width:650px;">
             <thead><tr style="text-align:left;border-bottom:1px solid var(--border);"><th style="padding:10px;">Fecha</th><th style="padding:10px;">Forma de pago</th><th style="padding:10px;">Referencia</th><th style="padding:10px;">Recibido por</th><th style="padding:10px;text-align:right;">Importe HNL</th></tr></thead>
             <tbody>@forelse($income->payments->sortByDesc('payment_date') as $payment)
-                <tr style="border-bottom:1px solid var(--border);"><td style="padding:10px;">{{ $payment->payment_date->format('d/m/Y') }}</td><td style="padding:10px;">{{ $payment->payment_method }}</td><td style="padding:10px;">{{ $payment->reference ?: '—' }}</td><td style="padding:10px;">{{ $payment->receiver->name ?? '—' }}</td><td style="padding:10px;text-align:right;">L {{ number_format((float)$payment->amount_hnl,2) }}</td></tr>
+                <tr style="border-bottom:1px solid var(--border);"><td style="padding:10px;">{{ $payment->payment_date->format('d/m/Y') }}</td><td style="padding:10px;">{{ $payment->payment_method }}@if($payment->bankAccount)<br><small>{{ $payment->bankAccount->bank_name }} — {{ $payment->bankAccount->account_number }}</small>@endif</td><td style="padding:10px;">{{ $payment->reference ?: '—' }}</td><td style="padding:10px;">{{ $payment->receiver->name ?? '—' }}</td><td style="padding:10px;text-align:right;">L {{ number_format((float)$payment->amount_hnl,2) }}</td></tr>
             @empty<tr><td colspan="5" style="padding:22px;text-align:center;color:var(--text-secondary);">Aún no hay pagos registrados.</td></tr>@endforelse</tbody>
         </table></div>
     </div>
 </div>
+<script>
+(function () {
+    const method = document.getElementById('payment_method');
+    const account = document.getElementById('finance_bank_account_id');
+    const mark = document.getElementById('bank-required-mark');
+    function syncBankAccount() {
+        if (!method || !account) return;
+        const required = method.value === 'Transferencia';
+        account.required = required;
+        if (mark) mark.style.visibility = required ? 'visible' : 'hidden';
+    }
+    method?.addEventListener('change', syncBankAccount);
+    syncBankAccount();
+})();
+</script>
 @endsection
