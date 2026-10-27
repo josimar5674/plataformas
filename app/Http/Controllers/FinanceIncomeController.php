@@ -30,7 +30,25 @@ class FinanceIncomeController extends Controller
                 });
             });
 
-        $summary = (clone $query)->reorder()->toBase()->selectRaw(
+        $summaryQuery = DB::table('finance_incomes')
+            ->when(!$request->hasAny(['year', 'month']), fn ($q) => $q->whereYear('income_date', now()->year)->whereMonth('income_date', now()->month))
+            ->when($request->filled('year'), fn ($q) => $q->whereYear('income_date', (int) $request->input('year')))
+            ->when($request->filled('month'), fn ($q) => $q->whereMonth('income_date', (int) $request->input('month')))
+            ->when($request->filled('status'), fn ($q) => $q->where('status', $request->input('status')))
+            ->when($request->filled('search'), function ($q) use ($request) {
+                $search = trim($request->string('search')->toString());
+                $q->where(function ($sub) use ($search) {
+                    $sub->where('description', 'like', "%{$search}%")
+                        ->orWhereExists(function ($customerQuery) use ($search) {
+                            $customerQuery->selectRaw('1')
+                                ->from('business_customers')
+                                ->whereColumn('business_customers.id', 'finance_incomes.business_customer_id')
+                                ->where('business_customers.nombre', 'like', "%{$search}%");
+                        });
+                });
+            });
+
+        $summary = (clone $summaryQuery)->selectRaw(
             'COUNT(*) as count, COALESCE(SUM(total_usd), 0) as total_usd, COALESCE(SUM(total_hnl), 0) as total_hnl'
         )->first();
 
