@@ -11,9 +11,7 @@
         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
             <span style="padding:8px 12px;border-radius:20px;background:var(--surface);border:1px solid var(--border);">{{ ['pending'=>'Pendiente','partial'=>'Pago parcial','paid'=>'Pagado'][$income->status] ?? $income->status }}</span>
             <a class="btn-secondary" href="{{ route('finances.incomes.edit', $income) }}" style="text-decoration:none;">Editar ingreso</a>
-            @if($income->payments->isEmpty())
-                <form method="POST" action="{{ route('finances.incomes.destroy', $income) }}" onsubmit="return confirm('¿Seguro que deseas eliminar este ingreso? Esta acción no se puede deshacer.');">@csrf @method('DELETE')<button type="submit" class="btn-secondary">Eliminar</button></form>
-            @endif
+            <form method="POST" action="{{ route('finances.incomes.destroy', $income) }}" onsubmit="return confirm('ATENCIÓN: se eliminará este ingreso junto con todos sus abonos e historial de pagos. Esta acción no se puede deshacer. ¿Deseas continuar?');">@csrf @method('DELETE')<button type="submit" class="btn-secondary">Eliminar</button></form>
         </div>
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:22px;">
