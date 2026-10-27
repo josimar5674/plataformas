@@ -33,6 +33,7 @@ use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\InvoiceImageController;
 use App\Http\Controllers\FiscalConfigurationController;
 use App\Http\Controllers\FinanceIncomeController;
+use App\Http\Controllers\FinanceIncomeController;
 /*
 |--------------------------------------------------------------------------
 | RUTAS PROTEGIDAS
@@ -773,6 +774,10 @@ Route::get('/invoices/{invoice}/image', [InvoiceImageController::class, 'show'])
             ->name('taxes.toggle');
         Route::post('/tipo-cambio', [FiscalConfigurationController::class, 'storeExchangeRate'])
             ->name('exchange-rates.store');
+        Route::post('/cuentas-bancarias', [FiscalConfigurationController::class, 'storeBankAccount'])
+            ->name('bank-accounts.store');
+        Route::patch('/cuentas-bancarias/{bankAccount}/toggle', [FiscalConfigurationController::class, 'toggleBankAccount'])
+            ->name('bank-accounts.toggle');
     });
 
 }); // termina el ouauth
