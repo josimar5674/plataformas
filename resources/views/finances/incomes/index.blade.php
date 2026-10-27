@@ -10,13 +10,13 @@
         <div><label for="filter_year" style="display:block;margin-bottom:5px;">Año</label><select class="form-control" id="filter_year" name="year" style="min-width:115px;">
             <option value="">Todos</option>
             @for($year = now()->year + 1; $year >= 2020; $year--)
-                <option value="{{ $year }}" @selected((string)request('year') === (string)$year)>{{ $year }}</option>
+                <option value="{{ $year }}" @selected((string)request('year', now()->year) === (string)$year)>{{ $year }}</option>
             @endfor
         </select></div>
         <div><label for="filter_month" style="display:block;margin-bottom:5px;">Mes</label><select class="form-control" id="filter_month" name="month" style="min-width:145px;">
             <option value="">Todos</option>
             @foreach([1=>'Enero',2=>'Febrero',3=>'Marzo',4=>'Abril',5=>'Mayo',6=>'Junio',7=>'Julio',8=>'Agosto',9=>'Septiembre',10=>'Octubre',11=>'Noviembre',12=>'Diciembre'] as $monthNumber=>$monthName)
-                <option value="{{ $monthNumber }}" @selected((string)request('month') === (string)$monthNumber)>{{ $monthName }}</option>
+                <option value="{{ $monthNumber }}" @selected((string)request('month', now()->month) === (string)$monthNumber)>{{ $monthName }}</option>
             @endforeach
         </select></div>
         <input class="form-control" style="max-width:320px;" type="search" name="search" value="{{ request('search') }}" placeholder="Buscar por cliente o descripción">
