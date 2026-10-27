@@ -123,7 +123,7 @@ class FinanceIncomeController extends Controller
         ]);
 
         $taxRate = FinanceTaxRate::where('active', true)->findOrFail($data['finance_tax_rate_id']);
-        $date = \\Illuminate\\Support\\Carbon::parse($data['income_date']);
+        $date = \Illuminate\Support\Carbon::parse($data['income_date']);
         $exchangeRate = FinanceExchangeRate::where('year', $date->year)->where('month', $date->month)->first();
         if (!$exchangeRate) {
             throw ValidationException::withMessages(['income_date' => "No hay tasa de cambio configurada para {$date->format('m/Y')}."]);
