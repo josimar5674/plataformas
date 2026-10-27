@@ -30,7 +30,7 @@
 
         <div class="fiscal-section-header">
             <div>
-                <h3>💱 Tipo de cambio mensual</h3>
+                <h3>Tipo de cambio mensual</h3>
 
                 <p>
                     Configura la tasa USD → HNL correspondiente a cada mes.
