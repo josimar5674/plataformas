@@ -1,17 +1,34 @@
 @extends('layouts.app')
 
 @section('content')
+<style>
+.finance-income-header-actions { display:flex; align-items:stretch; gap:10px; flex-wrap:wrap; }
+.finance-income-header-actions form { display:flex; margin:0; }
+.finance-income-header-actions .btn-primary-custom,
+.finance-income-header-actions .btn-secondary,
+.finance-income-header-actions button { min-height:44px; height:44px; box-sizing:border-box; display:inline-flex; align-items:center; justify-content:center; padding:0 18px; border-radius:10px; font:inherit; font-weight:600; line-height:1; white-space:nowrap; }
+.finance-income-header-actions a { text-decoration:none; }
+</style>
+
 @if(session('success'))<div class="alert alert-success" style="margin:16px 0;">{{ session('success') }}</div>@endif
 @if(session('error'))<div class="alert alert-danger" style="margin:16px 0;">{{ session('error') }}</div>@endif
 @if($errors->any())<div class="alert alert-danger" style="margin:16px 0;">{{ $errors->first() }}</div>@endif
 <div style="max-width:1200px;margin:24px auto;padding:0 16px;">
     <div style="display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:22px;">
         <div><h1 style="margin:0;">💰 Ingresos</h1><p style="color:var(--text-secondary);margin:6px 0 0;">Ingresos en USD, equivalencia en lempiras y abonos recibidos.</p></div>
-        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <div class="finance-income-header-actions">
             <form method="POST" action="{{ route('finances.incomes.copy-previous-month') }}" onsubmit="return confirm('Se copiarán los ingresos del mes anterior que no existan todavía en el mes actual. Quedarán pendientes y sin abonos copiados. ¿Continuar?');">@csrf<button type="submit" class="btn-secondary">⟳ Copiar mes anterior</button></form>
             <a href="{{ route('finances.incomes.create') }}" class="btn-primary-custom" style="text-decoration:none;">＋ Registrar ingreso</a>
         </div>
     </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin:20px 0;">
+        <div style="padding:16px;border:1px solid var(--border);border-radius:12px;background:var(--surface);"><div style="font-size:13px;color:var(--text-secondary);">Ingresos encontrados</div><strong style="display:block;font-size:24px;margin-top:6px;">{{ number_format((int)$summary->count) }}</strong></div>
+        <div style="padding:16px;border:1px solid var(--border);border-radius:12px;background:var(--surface);"><div style="font-size:13px;color:var(--text-secondary);">Total USD</div><strong style="display:block;font-size:24px;margin-top:6px;">$ {{ number_format((float)$summary->total_usd, 2) }}</strong></div>
+        <div style="padding:16px;border:1px solid var(--border);border-radius:12px;background:var(--surface);"><div style="font-size:13px;color:var(--text-secondary);">Total HNL</div><strong style="display:block;font-size:24px;margin-top:6px;">L {{ number_format((float)$summary->total_hnl, 2) }}</strong></div>
+        <div style="padding:16px;border:1px solid var(--border);border-radius:12px;background:var(--surface);"><div style="font-size:13px;color:var(--text-secondary);">Abonado HNL</div><strong style="display:block;font-size:24px;margin-top:6px;">L {{ number_format((float)$summary->paid_hnl, 2) }}</strong></div>
+        <div style="padding:16px;border:1px solid var(--border);border-radius:12px;background:var(--surface);"><div style="font-size:13px;color:var(--text-secondary);">Saldo HNL</div><strong style="display:block;font-size:24px;margin-top:6px;">L {{ number_format((float)$summary->balance_hnl, 2) }}</strong></div>
+    </div>
+
     <form method="GET" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;align-items:end;">
         <div><label for="filter_year" style="display:block;margin-bottom:5px;">Año</label><select class="form-control" id="filter_year" name="year" style="min-width:115px;">
             <option value="">Todos</option>
