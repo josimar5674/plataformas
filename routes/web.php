@@ -800,3 +800,12 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     [\App\Http\Controllers\Admin\DeviceActivationController::class, 'destroy']
 )->name('device-activation.destroy');
 });
+
+// FINANZAS — INGRESOS Y PAGOS
+Route::middleware('auth')->prefix('finanzas')->name('finances.')->group(function () {
+    Route::get('/ingresos', [FinanceIncomeController::class, 'index'])->name('incomes.index');
+    Route::get('/ingresos/crear', [FinanceIncomeController::class, 'create'])->name('incomes.create');
+    Route::post('/ingresos', [FinanceIncomeController::class, 'store'])->name('incomes.store');
+    Route::get('/ingresos/{income}', [FinanceIncomeController::class, 'show'])->name('incomes.show');
+    Route::post('/ingresos/{income}/pagos', [FinanceIncomeController::class, 'storePayment'])->name('incomes.payments.store');
+});
