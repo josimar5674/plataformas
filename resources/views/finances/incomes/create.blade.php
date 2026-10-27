@@ -20,7 +20,7 @@
         </div>
         <div style="margin-top:18px;"><label for="description">Descripción *</label><input class="form-control" id="description" name="description" maxlength="255" value="{{ old('description') }}" required></div>
         <div style="margin-top:18px;"><label for="notes">Notas</label><textarea class="form-control" id="notes" name="notes" rows="3">{{ old('notes') }}</textarea></div>
-        <div style="margin-top:18px;padding:16px;border-radius:8px;background:var(--background, #f8fafc);border:1px solid var(--border);">
+        <div style="margin-top:18px;padding:16px;border-radius:8px;border:1px solid var(--border);">
             <strong>Vista previa (referencial)</strong>
             <div style="display:flex;justify-content:space-between;gap:12px;margin-top:10px;"><span>Impuesto estimado</span><strong id="preview-tax">$ 0.00</strong></div>
             <div style="display:flex;justify-content:space-between;gap:12px;margin-top:8px;"><span>Total estimado</span><strong id="preview-total">$ 0.00</strong></div>
