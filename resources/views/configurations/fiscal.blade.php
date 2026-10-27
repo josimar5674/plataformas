@@ -451,7 +451,7 @@
             </div>
             <div class="fiscal-field">
                 <label for="account_name">Titular / nombre de cuenta *</label>
-                <input id="account_name" class="form-control fiscal-control" name="account_name" maxlength="160" placeholder="Ej. FUTUROS S. de R.L." value="{{ old('account_name') }}" required>
+                <input id="account_name" class="form-control fiscal-control" name="account_name" maxlength="160" placeholder="Ej. ZHX S. de R.L." value="{{ old('account_name') }}" required>
             </div>
             <div class="fiscal-field">
                 <label for="account_number">Número de cuenta *</label>
