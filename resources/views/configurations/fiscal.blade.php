@@ -430,4 +430,70 @@
 
     </section>
 
+
+
+    {{-- =====================================================
+         CUENTAS BANCARIAS
+    ====================================================== --}}
+    <section class="fiscal-section">
+        <div class="fiscal-section-header">
+            <div>
+                <h3>Cuentas bancarias</h3>
+                <p>Registra las cuentas disponibles para identificar dónde se recibió cada abono.</p>
+            </div>
+        </div>
+
+        <form method="POST" action="{{ route('fiscal.bank-accounts.store') }}" class="fiscal-tax-form">
+            @csrf
+            <div class="fiscal-field">
+                <label for="bank_name">Banco *</label>
+                <input id="bank_name" class="form-control fiscal-control" name="bank_name" maxlength="120" placeholder="Ej. Banco Atlántida" value="{{ old('bank_name') }}" required>
+            </div>
+            <div class="fiscal-field">
+                <label for="account_name">Titular / nombre de cuenta *</label>
+                <input id="account_name" class="form-control fiscal-control" name="account_name" maxlength="160" placeholder="Ej. FUTUROS S. de R.L." value="{{ old('account_name') }}" required>
+            </div>
+            <div class="fiscal-field">
+                <label for="account_number">Número de cuenta *</label>
+                <input id="account_number" class="form-control fiscal-control" name="account_number" maxlength="80" value="{{ old('account_number') }}" required>
+            </div>
+            <div class="fiscal-field">
+                <label for="currency">Moneda *</label>
+                <select id="currency" class="form-control fiscal-control fiscal-select" name="currency" required>
+                    <option value="HNL" @selected(old('currency', 'HNL') === 'HNL')>Lempiras (HNL)</option>
+                    <option value="USD" @selected(old('currency') === 'USD')>Dólares (USD)</option>
+                </select>
+            </div>
+            <div class="fiscal-button-wrapper">
+                <button type="submit" class="btn-primary-custom fiscal-save-button">＋ Agregar cuenta</button>
+            </div>
+        </form>
+
+        <div class="fiscal-table-container">
+            <table class="table fiscal-table">
+                <thead><tr><th>Banco</th><th>Titular</th><th>Número de cuenta</th><th>Moneda</th><th>Estado</th><th>Acciones</th></tr></thead>
+                <tbody>
+                @forelse($financeBankAccounts as $bankAccount)
+                    <tr>
+                        <td><strong>{{ $bankAccount->bank_name }}</strong></td>
+                        <td>{{ $bankAccount->account_name }}</td>
+                        <td>{{ $bankAccount->account_number }}</td>
+                        <td>{{ $bankAccount->currency }}</td>
+                        <td><span class="configuration-status {{ $bankAccount->active ? 'active' : 'inactive' }}">{{ $bankAccount->active ? 'Activa' : 'Inactiva' }}</span></td>
+                        <td>
+                            <form method="POST" action="{{ route('fiscal.bank-accounts.toggle', $bankAccount) }}" onsubmit="return confirm('¿Deseas {{ $bankAccount->active ? 'desactivar' : 'activar' }} esta cuenta?');">
+                                @csrf
+                                @method('PATCH')
+                                <button type="submit" class="btn-secondary fiscal-action-button">{{ $bankAccount->active ? 'Desactivar' : 'Activar' }}</button>
+                            </form>
+                        </td>
+                    </tr>
+                @empty
+                    <tr><td colspan="6" class="fiscal-empty-state">Todavía no hay cuentas bancarias registradas.</td></tr>
+                @endforelse
+                </tbody>
+            </table>
+        </div>
+    </section>
+
 </div>
