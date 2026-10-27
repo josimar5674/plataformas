@@ -61,7 +61,10 @@ class FinanceIncome extends Model
 
     public function getPaidHnlAttribute(): string
     {
-        return number_format((float) $this->payments_sum_amount_hnl, 2, '.', '');
+        $paid = $this->payments_sum_amount_hnl
+            ?? $this->payments()->sum('amount_hnl');
+
+        return number_format((float) $paid, 2, '.', '');
     }
 
     public function getOutstandingHnlAttribute(): string
