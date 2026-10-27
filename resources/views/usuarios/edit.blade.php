@@ -967,6 +967,20 @@
 
 
 
+<div id="permisos-finanzas" style="display:none;">
+    <div class="form-group">
+        <label class="form-label">Módulos de Finanzas permitidos</label>
+        <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:15px;">
+            @foreach(['ingresos'=>'Ingresos','egresos'=>'Egresos','resumen'=>'Resumen'] as $key=>$label)
+                <label style="display:flex!important;align-items:center!important;gap:12px!important;padding:14px 16px!important;border:1px solid var(--border)!important;border-radius:10px!important;background:var(--surface)!important;cursor:pointer!important;margin:0!important;">
+                    <input type="checkbox" name="finanzas[{{ $key }}]" value="1" @checked(old('finanzas.'.$key, $permisosFinanzas->$key ?? false)) style="width:16px;height:16px;margin:0;">
+                    <span>{{ $label }}</span>
+                </label>
+            @endforeach
+        </div>
+    </div>
+</div>
+
         <!-- ===================================================== -->
         <!-- BOTONES -->
         <!-- ===================================================== -->
