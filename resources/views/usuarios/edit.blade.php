@@ -243,6 +243,10 @@
                 Facturas
         </button>
 
+        <button type="button" id="tabFinanzas" class="permission-tab" onclick="mostrarPermisos('finanzas')">
+            💰 Finanzas
+        </button>
+
     </div>
 
 
@@ -1013,7 +1017,8 @@ function mostrarPermisos(tipo)
         'clientes',
         'entidades',
         'businessCustomers',
-        'facturas'
+        'facturas',
+        'finanzas'
     ];
 
     // Ocultar todos los paneles
@@ -1043,7 +1048,8 @@ function mostrarPermisos(tipo)
         clientes: 'tabClientes',
         entidades: 'tabEntidades',
         businessCustomers: 'tabBusinessCustomers',
-        facturas: 'tabFacturas'
+        facturas: 'tabFacturas',
+        finanzas: 'tabFinanzas'
     };
 
     const boton = document.getElementById(botones[tipo]);
