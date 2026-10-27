@@ -5,13 +5,13 @@
 @if(session('error'))<div class="alert alert-danger" style="margin:16px auto;max-width:1100px;">{{ session('error') }}</div>@endif
 @if($errors->any())<div class="alert alert-danger" style="margin:16px auto;max-width:1100px;">{{ $errors->first() }}</div>@endif
 <div style="max-width:1100px;margin:24px auto;padding:0 16px;">
-    <a href="{{ route('finances.incomes.index') }}">← Volver a ingresos</a>
+    <a href="{{ route('finances.incomes.index') }}" style="color:var(--text, #111827);">← Volver a ingresos</a>
     <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin:16px 0 22px;">
         <div><h1 style="margin:0;">{{ $income->description }}</h1><p style="color:var(--text-secondary);margin:6px 0;">{{ $income->customer->nombre ?? 'Cliente no disponible' }} · {{ $income->income_date->format('d/m/Y') }}</p></div>
         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-            <span style="padding:8px 12px;border-radius:20px;background:var(--surface);border:1px solid var(--border);">{{ ['pending'=>'Pendiente','partial'=>'Pago parcial','paid'=>'Pagado'][$income->status] ?? $income->status }}</span>
-            <a class="btn-secondary" href="{{ route('finances.incomes.edit', $income) }}" style="text-decoration:none;">Editar ingreso</a>
-            <form method="POST" action="{{ route('finances.incomes.destroy', $income) }}" onsubmit="return confirm('ATENCIÓN: se eliminará este ingreso junto con todos sus abonos e historial de pagos. Esta acción no se puede deshacer. ¿Deseas continuar?');">@csrf @method('DELETE')<button type="submit" class="btn-secondary">Eliminar</button></form>
+            <span style="display:inline-flex;align-items:center;min-height:40px;box-sizing:border-box;padding:0 14px;border-radius:20px;border:1px solid;{{ $income->status === 'paid' ? 'background:#dcfce7;color:#166534;border-color:#86efac;' : ($income->status === 'pending' ? 'background:#fef3c7;color:#92400e;border-color:#fcd34d;' : 'background:#dbeafe;color:#1d4ed8;border-color:#93c5fd;') }}">{{ ['pending'=>'Pendiente','partial'=>'Pago parcial','paid'=>'Pagado'][$income->status] ?? $income->status }}</span>
+            <a class="btn-secondary" href="{{ route('finances.incomes.edit', $income) }}" style="display:inline-flex;align-items:center;justify-content:center;min-height:40px;box-sizing:border-box;padding:0 14px;border-radius:9px;text-decoration:none;">Editar ingreso</a>
+            <form method="POST" action="{{ route('finances.incomes.destroy', $income) }}" onsubmit="return confirm('ATENCIÓN: se eliminará este ingreso junto con todos sus abonos e historial de pagos. Esta acción no se puede deshacer. ¿Deseas continuar?');">@csrf @method('DELETE')<button type="submit" class="btn-secondary" style="display:inline-flex;align-items:center;justify-content:center;min-height:40px;box-sizing:border-box;padding:0 14px;border-radius:9px;cursor:pointer;">Eliminar</button></form>
         </div>
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:22px;">
