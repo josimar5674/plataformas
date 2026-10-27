@@ -1,11 +1,20 @@
 @extends('layouts.app')
 
 @section('content')
+@if(session('success'))<div class="alert alert-success" style="margin:16px auto;max-width:1100px;">{{ session('success') }}</div>@endif
+@if(session('error'))<div class="alert alert-danger" style="margin:16px auto;max-width:1100px;">{{ session('error') }}</div>@endif
+@if($errors->any())<div class="alert alert-danger" style="margin:16px auto;max-width:1100px;">{{ $errors->first() }}</div>@endif
 <div style="max-width:1100px;margin:24px auto;padding:0 16px;">
     <a href="{{ route('finances.incomes.index') }}">← Volver a ingresos</a>
     <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin:16px 0 22px;">
         <div><h1 style="margin:0;">{{ $income->description }}</h1><p style="color:var(--text-secondary);margin:6px 0;">{{ $income->customer->nombre ?? 'Cliente no disponible' }} · {{ $income->income_date->format('d/m/Y') }}</p></div>
-        <span style="padding:8px 12px;border-radius:20px;background:var(--surface);border:1px solid var(--border);">{{ ['pending'=>'Pendiente','partial'=>'Pago parcial','paid'=>'Pagado'][$income->status] ?? $income->status }}</span>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <span style="padding:8px 12px;border-radius:20px;background:var(--surface);border:1px solid var(--border);">{{ ['pending'=>'Pendiente','partial'=>'Pago parcial','paid'=>'Pagado'][$income->status] ?? $income->status }}</span>
+            <a class="btn-secondary" href="{{ route('finances.incomes.edit', $income) }}" style="text-decoration:none;">Editar ingreso</a>
+            @if($income->payments->isEmpty())
+                <form method="POST" action="{{ route('finances.incomes.destroy', $income) }}" onsubmit="return confirm('¿Seguro que deseas eliminar este ingreso? Esta acción no se puede deshacer.');">@csrf @method('DELETE')<button type="submit" class="btn-secondary">Eliminar</button></form>
+            @endif
+        </div>
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:22px;">
         @foreach([['Subtotal USD','$ '.number_format((float)$income->subtotal_usd,2)],['Impuesto '.$income->tax_name_snapshot.' ('.$income->tax_percentage_snapshot.'%)','$ '.number_format((float)$income->tax_amount_usd,2)],['Total USD','$ '.number_format((float)$income->total_usd,2)],['Total en lempiras','L '.number_format((float)$income->total_hnl,2)],['Abonado','L '.number_format($paid,2)],['Saldo pendiente','L '.number_format($outstanding,2)]] as [$label,$value])
