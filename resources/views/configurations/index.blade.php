@@ -91,6 +91,13 @@
     📱 Activación de dispositivos
 </a>
 
+<a
+    href="/configuraciones?section=fiscal"
+    class="{{ request('section') === 'fiscal' ? 'active' : '' }}"
+>
+    🧾 Fiscal
+</a>
+
 
 
         @forelse($catalogs as $catalogItem)
@@ -137,6 +144,10 @@
 @elseif(request('section') === 'device-activation')
 
     @include('configurations.device-activation')
+
+@elseif(request('section') === 'fiscal')
+
+    @include('configurations.fiscal')
 
 @elseif($catalogSelected)
 

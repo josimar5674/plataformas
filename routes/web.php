@@ -31,6 +31,7 @@ use App\Http\Controllers\Admin\DeviceActivationController;
 use App\Http\Controllers\InvoiceTypeController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\InvoiceImageController;
+use App\Http\Controllers\FiscalConfigurationController;
 /*
 |--------------------------------------------------------------------------
 | RUTAS PROTEGIDAS
@@ -755,6 +756,23 @@ Route::delete('/facturas/{invoice}/eliminar', [
 Route::get('/invoices/{invoice}/image', [InvoiceImageController::class, 'show'])
 
     ->name('invoices.image');
+
+
+    /*
+    |----------------------------------------------------------------------
+    | CONFIGURACIÓN FISCAL — solo administradores
+    |----------------------------------------------------------------------
+    */
+    Route::middleware('admin')->prefix('configuraciones/fiscal')->name('fiscal.')->group(function () {
+        Route::post('/impuestos', [FiscalConfigurationController::class, 'storeTax'])
+            ->name('taxes.store');
+        Route::put('/impuestos/{taxRate}', [FiscalConfigurationController::class, 'updateTax'])
+            ->name('taxes.update');
+        Route::patch('/impuestos/{taxRate}/toggle', [FiscalConfigurationController::class, 'toggleTax'])
+            ->name('taxes.toggle');
+        Route::post('/tipo-cambio', [FiscalConfigurationController::class, 'storeExchangeRate'])
+            ->name('exchange-rates.store');
+    });
 
 }); // termina el ouauth
 
