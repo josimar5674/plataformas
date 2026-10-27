@@ -31,7 +31,7 @@ use App\Http\Controllers\Admin\DeviceActivationController;
 use App\Http\Controllers\InvoiceTypeController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\InvoiceImageController;
-use App\Http\Controllers\FiscalConfigurationController;
+use App\Http\Controllers\FiscalConfigurationController;\nuse App\Http\Controllers\FinanceIncomeController;
 /*
 |--------------------------------------------------------------------------
 | RUTAS PROTEGIDAS
