@@ -27,7 +27,6 @@
             @endforeach
         </select>
         <button class="btn-secondary" type="submit">Filtrar</button>
-        <a class="btn-secondary" href="{{ route('finances.incomes.index') }}" style="text-decoration:none;">Limpiar</a>
     </form>
     <div style="overflow-x:auto;background:var(--surface);border:1px solid var(--border);border-radius:12px;">
         <table style="width:100%;border-collapse:collapse;min-width:850px;">
