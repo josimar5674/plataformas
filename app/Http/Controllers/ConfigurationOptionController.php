@@ -9,6 +9,8 @@ use App\Models\GoogleWorkspaceSetting;
 use App\Models\TrustedDevice;
 use Illuminate\Support\Facades\Schema;
 use App\Models\InvoiceType;
+use App\Models\FinanceTaxRate;
+use App\Models\FinanceExchangeRate;
 
 class ConfigurationOptionController extends Controller
 {
@@ -21,6 +23,22 @@ class ConfigurationOptionController extends Controller
 public function index(Request $request)
 {
     $catalogId = $request->catalog;
+
+    $financeTaxRates = FinanceTaxRate::orderBy('sort_order')
+        ->orderBy('percentage')
+        ->get();
+
+    $financeExchangeRates = FinanceExchangeRate::with('updatedBy')
+        ->orderByDesc('year')
+        ->orderByDesc('month')
+        ->get();
+
+    $selectedYear = (int) $request->query('year', now()->year);
+    $selectedMonth = (int) $request->query('month', now()->month);
+
+    $currentExchangeRate = FinanceExchangeRate::where('year', $selectedYear)
+        ->where('month', $selectedMonth)
+        ->first();
 
 
     /*
@@ -105,7 +123,12 @@ public function index(Request $request)
             'googleConnected',
             'googleAccount',
             'googleConnectedAt',
-            'trustedDevices'
+            'trustedDevices',
+            'financeTaxRates',
+            'financeExchangeRates',
+            'selectedYear',
+            'selectedMonth',
+            'currentExchangeRate'
         )
     );
 }
