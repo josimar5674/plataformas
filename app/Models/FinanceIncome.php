@@ -25,6 +25,7 @@ class FinanceIncome extends Model
         'status',
         'notes',
         'created_by',
+        'copied_from_income_id',
     ];
 
     protected $casts = [
