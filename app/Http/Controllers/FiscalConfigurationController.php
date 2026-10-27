@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\FinanceExchangeRate;
+use App\Models\FinanceBankAccount;
 use App\Models\FinanceTaxRate;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -55,6 +56,30 @@ class FiscalConfigurationController extends Controller
 
         return redirect('/configuraciones?section=fiscal')
             ->with('success', 'Estado del impuesto actualizado.');
+    }
+
+
+    public function storeBankAccount(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'bank_name' => ['required', 'string', 'max:120'],
+            'account_name' => ['required', 'string', 'max:160'],
+            'account_number' => ['required', 'string', 'max:80'],
+            'currency' => ['required', 'in:HNL,USD'],
+        ]);
+
+        FinanceBankAccount::create($validated + ['active' => true]);
+
+        return redirect('/configuraciones?section=fiscal')
+            ->with('success', 'Cuenta bancaria agregada correctamente.');
+    }
+
+    public function toggleBankAccount(FinanceBankAccount $bankAccount): RedirectResponse
+    {
+        $bankAccount->update(['active' => ! $bankAccount->active]);
+
+        return redirect('/configuraciones?section=fiscal')
+            ->with('success', 'Estado de la cuenta bancaria actualizado.');
     }
 
     public function storeExchangeRate(Request $request): RedirectResponse
