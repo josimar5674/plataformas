@@ -30,12 +30,30 @@ class FinanceIncomeController extends Controller
                 });
             });
 
-        $summary = (clone $query)->reorder()->selectRaw(
+        $summary = (clone $query)->reorder()->toBase()->selectRaw(
             'COUNT(*) as count, COALESCE(SUM(total_usd), 0) as total_usd, COALESCE(SUM(total_hnl), 0) as total_hnl'
         )->first();
 
-        $summary->paid_hnl = (float) (clone $query)->reorder()->leftJoin('finance_payments', 'finance_incomes.id', '=', 'finance_payments.finance_income_id')->sum('finance_payments.amount_hnl');
-        $summary->balance_hnl = max((float) $summary->total_hnl - $summary->paid_hnl, 0);
+        $summary->paid_hnl = (float) DB::table('finance_payments')
+            ->join('finance_incomes', 'finance_incomes.id', '=', 'finance_payments.finance_income_id')
+            ->when(!$request->hasAny(['year', 'month']), fn ($q) => $q->whereYear('finance_incomes.income_date', now()->year)->whereMonth('finance_incomes.income_date', now()->month))
+            ->when($request->filled('year'), fn ($q) => $q->whereYear('finance_incomes.income_date', (int) $request->input('year')))
+            ->when($request->filled('month'), fn ($q) => $q->whereMonth('finance_incomes.income_date', (int) $request->input('month')))
+            ->when($request->filled('status'), fn ($q) => $q->where('finance_incomes.status', $request->input('status')))
+            ->when($request->filled('search'), function ($q) use ($request) {
+                $search = trim($request->string('search')->toString());
+                $q->where(function ($sub) use ($search) {
+                    $sub->where('finance_incomes.description', 'like', "%{$search}%")
+                        ->orWhereExists(function ($customerQuery) use ($search) {
+                            $customerQuery->selectRaw('1')
+                                ->from('business_customers')
+                                ->whereColumn('business_customers.id', 'finance_incomes.business_customer_id')
+                                ->where('business_customers.nombre', 'like', "%{$search}%");
+                        });
+                });
+            })
+            ->sum('finance_payments.amount_hnl');
+        $summary->balance_hnl = max((float) $summary->total_hnl - (float) $summary->paid_hnl, 0);
 
         $incomes = (clone $query)
             ->orderByDesc('income_date')
