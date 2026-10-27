@@ -99,6 +99,143 @@ class FinanceIncomeController extends Controller
         return redirect()->route('finances.incomes.index')->with('success', 'Ingreso registrado correctamente.');
     }
 
+
+    public function edit(FinanceIncome $income)
+    {
+        $income->load('payments');
+        $customers = BusinessCustomer::orderBy('nombre')->get();
+        $taxRates = FinanceTaxRate::where('active', true)->orderBy('sort_order')->orderBy('percentage')->get();
+        $exchangeRate = FinanceExchangeRate::where('year', $income->income_date->year)
+            ->where('month', $income->income_date->month)->first();
+
+        return view('finances.incomes.edit', compact('income', 'customers', 'taxRates', 'exchangeRate'));
+    }
+
+    public function update(Request $request, FinanceIncome $income)
+    {
+        $data = $request->validate([
+            'business_customer_id' => ['required', 'exists:business_customers,id'],
+            'description' => ['required', 'string', 'max:255'],
+            'income_date' => ['required', 'date'],
+            'subtotal_usd' => ['required', 'numeric', 'gt:0', 'max:999999999999'],
+            'finance_tax_rate_id' => ['required', 'exists:finance_tax_rates,id'],
+            'notes' => ['nullable', 'string', 'max:5000'],
+        ]);
+
+        $taxRate = FinanceTaxRate::where('active', true)->findOrFail($data['finance_tax_rate_id']);
+        $date = \\Illuminate\\Support\\Carbon::parse($data['income_date']);
+        $exchangeRate = FinanceExchangeRate::where('year', $date->year)->where('month', $date->month)->first();
+        if (!$exchangeRate) {
+            throw ValidationException::withMessages(['income_date' => "No hay tasa de cambio configurada para {$date->format('m/Y')}."]);
+        }
+
+        $subtotalUsd = round((float) $data['subtotal_usd'], 2);
+        $taxUsd = round($subtotalUsd * ((float) $taxRate->percentage / 100), 2);
+        $totalUsd = round($subtotalUsd + $taxUsd, 2);
+        $rate = (float) $exchangeRate->rate;
+        $totalHnl = round($totalUsd * $rate, 2);
+        $paid = (float) $income->payments()->sum('amount_hnl');
+
+        if ($totalHnl < $paid) {
+            throw ValidationException::withMessages(['subtotal_usd' => 'El total nuevo no puede ser menor que los abonos ya recibidos (L '.number_format($paid, 2).').']);
+        }
+
+        $income->update([
+            'business_customer_id' => $data['business_customer_id'],
+            'description' => $data['description'],
+            'income_date' => $data['income_date'],
+            'subtotal_usd' => $subtotalUsd,
+            'finance_tax_rate_id' => $taxRate->id,
+            'tax_name_snapshot' => $taxRate->name,
+            'tax_percentage_snapshot' => $taxRate->percentage,
+            'tax_amount_usd' => $taxUsd,
+            'total_usd' => $totalUsd,
+            'exchange_rate' => $rate,
+            'subtotal_hnl' => round($subtotalUsd * $rate, 2),
+            'tax_amount_hnl' => round($taxUsd * $rate, 2),
+            'total_hnl' => $totalHnl,
+            'status' => $paid <= 0 ? 'pending' : ($paid >= $totalHnl ? 'paid' : 'partial'),
+            'notes' => $data['notes'] ?? null,
+        ]);
+
+        return redirect()->route('finances.incomes.show', $income)->with('success', 'Ingreso actualizado correctamente.');
+    }
+
+    public function destroy(FinanceIncome $income)
+    {
+        if ($income->payments()->exists()) {
+            return redirect()->route('finances.incomes.show', $income)
+                ->with('error', 'No se puede eliminar un ingreso que ya tiene abonos registrados. Corrige o elimina primero sus pagos.');
+        }
+
+        $income->delete();
+
+        return redirect()->route('finances.incomes.index')->with('success', 'Ingreso eliminado correctamente.');
+    }
+
+    public function generateFromPreviousMonth(Request $request)
+    {
+        $target = now()->startOfMonth();
+        $source = $target->copy()->subMonth();
+        $sourceIncomes = FinanceIncome::whereYear('income_date', $source->year)
+            ->whereMonth('income_date', $source->month)->with('taxRate')->get();
+
+        if ($sourceIncomes->isEmpty()) {
+            return redirect()->route('finances.incomes.index')->with('error', 'No hay ingresos en el mes anterior para copiar.');
+        }
+
+        $exchangeRate = FinanceExchangeRate::where('year', $target->year)->where('month', $target->month)->first();
+        if (!$exchangeRate) {
+            return redirect()->route('finances.incomes.index')->with('error', 'Configura primero la tasa de cambio del mes actual.');
+        }
+
+        $created = 0;
+        $skipped = 0;
+        DB::transaction(function () use ($sourceIncomes, $target, $exchangeRate, &$created, &$skipped, $request) {
+            foreach ($sourceIncomes as $sourceIncome) {
+                $exists = FinanceIncome::where('business_customer_id', $sourceIncome->business_customer_id)
+                    ->where('description', $sourceIncome->description)
+                    ->whereYear('income_date', $target->year)
+                    ->whereMonth('income_date', $target->month)->exists();
+                if ($exists) {
+                    $skipped++;
+                    continue;
+                }
+
+                $tax = $sourceIncome->taxRate;
+                $percentage = $tax && $tax->active ? (float) $tax->percentage : (float) $sourceIncome->tax_percentage_snapshot;
+                $taxName = $tax && $tax->active ? $tax->name : $sourceIncome->tax_name_snapshot;
+                $subtotalUsd = (float) $sourceIncome->subtotal_usd;
+                $taxUsd = round($subtotalUsd * $percentage / 100, 2);
+                $totalUsd = round($subtotalUsd + $taxUsd, 2);
+                $rate = (float) $exchangeRate->rate;
+                $day = min($sourceIncome->income_date->day, $target->daysInMonth);
+                FinanceIncome::create([
+                    'business_customer_id' => $sourceIncome->business_customer_id,
+                    'description' => $sourceIncome->description,
+                    'income_date' => $target->copy()->day($day)->toDateString(),
+                    'subtotal_usd' => $subtotalUsd,
+                    'finance_tax_rate_id' => $tax && $tax->active ? $tax->id : null,
+                    'tax_name_snapshot' => $taxName,
+                    'tax_percentage_snapshot' => $percentage,
+                    'tax_amount_usd' => $taxUsd,
+                    'total_usd' => $totalUsd,
+                    'exchange_rate' => $rate,
+                    'subtotal_hnl' => round($subtotalUsd * $rate, 2),
+                    'tax_amount_hnl' => round($taxUsd * $rate, 2),
+                    'total_hnl' => round($totalUsd * $rate, 2),
+                    'status' => 'pending',
+                    'notes' => $sourceIncome->notes,
+                    'created_by' => $request->user()->id,
+                ]);
+                $created++;
+            }
+        });
+
+        return redirect()->route('finances.incomes.index')
+            ->with('success', "Se generaron {$created} ingresos pendientes para {$target->format('m/Y')}. Se omitieron {$skipped} duplicados.");
+    }
+
     public function show(FinanceIncome $income)
     {
         $income->load(['customer', 'creator', 'payments.receiver', 'payments.bankAccount']);
