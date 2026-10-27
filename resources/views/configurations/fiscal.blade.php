@@ -1,16 +1,21 @@
-<div style="max-width: 1100px;">
-    <div style="margin-bottom: 28px;">
-        <h2 style="margin-bottom: 8px;">🧾 Configuración fiscal</h2>
-        <p style="color: var(--text-secondary);">
-            Administra las tasas de impuestos y el tipo de cambio mensual que utilizará Finanzas.
-            Los movimientos financieros deberán conservar la tasa aplicada al momento de registrarse.
-        </p>
-    </div>
+<div class="fiscal-page">
 
+    {{-- ENCABEZADO --}}
+    <header class="fiscal-header">
+        <h2>🧾 Configuración fiscal</h2>
+
+        <p>
+            Administra las tasas de impuestos y el tipo de cambio mensual
+            que utilizará el módulo Finanzas.
+        </p>
+    </header>
+
+    {{-- MENSAJES DE VALIDACIÓN --}}
     @if($errors->any())
-        <div class="alert alert-danger">
+        <div class="alert alert-danger fiscal-alert">
             <strong>Revisa los siguientes datos:</strong>
-            <ul style="margin: 8px 0 0 20px;">
+
+            <ul>
                 @foreach($errors->all() as $error)
                     <li>{{ $error }}</li>
                 @endforeach
@@ -18,170 +23,411 @@
         </div>
     @endif
 
-    <section style="padding: 22px; border: 1px solid var(--border); border-radius: 12px; margin-bottom: 28px;">
-        <h3 style="margin-top: 0;">💱 Tipo de cambio mensual</h3>
-        <p style="color: var(--text-secondary); margin-bottom: 20px;">
-            Introduce manualmente la tasa USD → HNL vigente para un mes. Si ese mes ya existe,
-            guardar de nuevo actualizará la tasa de ese período; las tasas de otros meses no cambiarán.
-        </p>
+    {{-- =====================================================
+         TIPO DE CAMBIO
+    ====================================================== --}}
+    <section class="fiscal-section">
 
-        <form method="POST" action="{{ route('fiscal.exchange-rates.store') }}">
-            @csrf
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; align-items: end;">
-                <div class="form-group">
-                    <label for="exchange_year">Año</label>
-                    <input id="exchange_year" class="form-control" type="number" name="year"
-                           min="2020" max="2200" value="{{ old('year', $selectedYear) }}" required>
-                </div>
-                <div class="form-group">
-                    <label for="exchange_month">Mes</label>
-                    <select id="exchange_month" class="form-control" name="month" required>
-                        @foreach([1 => 'Enero', 2 => 'Febrero', 3 => 'Marzo', 4 => 'Abril', 5 => 'Mayo', 6 => 'Junio', 7 => 'Julio', 8 => 'Agosto', 9 => 'Septiembre', 10 => 'Octubre', 11 => 'Noviembre', 12 => 'Diciembre'] as $number => $monthName)
-                            <option value="{{ $number }}" @selected((int) old('month', $selectedMonth) === $number)>
-                                {{ $monthName }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="exchange_rate">Lempiras por dólar</label>
-                    <input id="exchange_rate" class="form-control" type="number" name="rate"
-                           min="0.0001" step="0.0001" value="{{ old('rate', $currentExchangeRate?->rate) }}"
-                           placeholder="Ej. 26.9455" required>
-                </div>
-                <div>
-                    <button type="submit" class="btn-primary-custom" style="width: 100%;">
-                        💾 Guardar tasa
-                    </button>
-                </div>
+        <div class="fiscal-section-header">
+            <div>
+                <h3>💱 Tipo de cambio mensual</h3>
+
+                <p>
+                    Configura la tasa USD → HNL correspondiente a cada mes.
+                    Las tasas de otros períodos se conservarán en el historial.
+                </p>
             </div>
+        </div>
+
+        <form
+            method="POST"
+            action="{{ route('fiscal.exchange-rates.store') }}"
+            class="fiscal-exchange-form"
+        >
+            @csrf
+
+            <div class="fiscal-field">
+                <label for="exchange_year">Año</label>
+
+                <input
+                    id="exchange_year"
+                    class="form-control fiscal-control"
+                    type="number"
+                    name="year"
+                    min="2020"
+                    max="2200"
+                    value="{{ old('year', $selectedYear) }}"
+                    required
+                >
+            </div>
+
+            <div class="fiscal-field">
+                <label for="exchange_month">Mes</label>
+
+                <select
+                    id="exchange_month"
+                    class="form-control fiscal-control fiscal-select"
+                    name="month"
+                    required
+                >
+                    @foreach([
+                        1 => 'Enero',
+                        2 => 'Febrero',
+                        3 => 'Marzo',
+                        4 => 'Abril',
+                        5 => 'Mayo',
+                        6 => 'Junio',
+                        7 => 'Julio',
+                        8 => 'Agosto',
+                        9 => 'Septiembre',
+                        10 => 'Octubre',
+                        11 => 'Noviembre',
+                        12 => 'Diciembre'
+                    ] as $number => $monthName)
+
+                        <option
+                            value="{{ $number }}"
+                            @selected((int) old('month', $selectedMonth) === $number)
+                        >
+                            {{ $monthName }}
+                        </option>
+
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="fiscal-field">
+                <label for="exchange_rate">Lempiras por dólar</label>
+
+                <input
+                    id="exchange_rate"
+                    class="form-control fiscal-control"
+                    type="number"
+                    name="rate"
+                    min="0.0001"
+                    step="0.0001"
+                    value="{{ old('rate', $currentExchangeRate?->rate) }}"
+                    placeholder="Ej. 26.9455"
+                    required
+                >
+            </div>
+
+            <div class="fiscal-button-wrapper">
+                <button
+                    type="submit"
+                    class="btn-primary-custom fiscal-save-button"
+                >
+                    💾 Guardar tasa
+                </button>
+            </div>
+
         </form>
 
+        {{-- ESTADO DE LA TASA --}}
         @if($currentExchangeRate)
-            <div class="alert alert-success" style="margin-top: 15px;">
-                Tasa guardada para {{ sprintf('%02d', $selectedMonth) }}/{{ $selectedYear }}:
-                <strong>{{ number_format((float) $currentExchangeRate->rate, 4) }} HNL por USD</strong>.
+
+            <div class="fiscal-notice fiscal-notice-success">
+                <span>✓</span>
+
+                <div>
+                    Tasa registrada para
+                    <strong>
+                        {{ sprintf('%02d', $selectedMonth) }}/{{ $selectedYear }}
+                    </strong>
+
+                    <div class="fiscal-notice-detail">
+                        {{ number_format((float) $currentExchangeRate->rate, 4) }}
+                        HNL por USD
+                    </div>
+                </div>
             </div>
+
         @else
-            <div class="alert" style="margin-top: 15px;">
-                Todavía no hay una tasa guardada para {{ sprintf('%02d', $selectedMonth) }}/{{ $selectedYear }}.
-                Selecciona el mes y registra la tasa antes de crear ingresos para ese período.
+
+            <div class="fiscal-notice fiscal-notice-warning">
+                <span>!</span>
+
+                <div>
+                    No hay una tasa registrada para
+                    <strong>
+                        {{ sprintf('%02d', $selectedMonth) }}/{{ $selectedYear }}
+                    </strong>.
+
+                    <div class="fiscal-notice-detail">
+                        Registra la tasa antes de crear ingresos para este período.
+                    </div>
+                </div>
             </div>
+
         @endif
 
-        <h4 style="margin-top: 28px;">Historial de tasas</h4>
-        <div style="overflow-x: auto;">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Período</th>
-                        <th>USD → HNL</th>
-                        <th>Actualizado por</th>
-                        <th>Última actualización</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($financeExchangeRates as $exchangeRate)
+        {{-- HISTORIAL DE TASAS --}}
+        <div class="fiscal-subsection">
+
+            <h4>Historial de tasas</h4>
+
+            <div class="fiscal-table-container">
+
+                <table class="table fiscal-table">
+
+                    <thead>
                         <tr>
-                            <td>{{ sprintf('%02d', $exchangeRate->month) }}/{{ $exchangeRate->year }}</td>
-                            <td><strong>{{ number_format((float) $exchangeRate->rate, 4) }}</strong></td>
-                            <td>{{ $exchangeRate->updatedBy?->email ?? 'Usuario no disponible' }}</td>
-                            <td>{{ $exchangeRate->updated_at?->format('d/m/Y H:i') }}</td>
-                            <td>
-                                <a class="btn-secondary"
-                                   href="{{ url('/configuraciones') }}?section=fiscal&year={{ $exchangeRate->year }}&month={{ $exchangeRate->month }}">
-                                    Cargar
-                                </a>
-                            </td>
+                            <th>Período</th>
+                            <th>USD → HNL</th>
+                            <th>Actualizado por</th>
+                            <th>Última actualización</th>
+                            <th>Acciones</th>
                         </tr>
-                    @empty
-                        <tr>
-                            <td colspan="5" style="text-align: center; padding: 20px;">
-                                Todavía no hay tasas de cambio registradas.
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
+                    </thead>
+
+                    <tbody>
+                        @forelse($financeExchangeRates as $exchangeRate)
+
+                            <tr>
+                                <td>
+                                    <span class="fiscal-period">
+                                        {{ sprintf('%02d', $exchangeRate->month) }}/{{ $exchangeRate->year }}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <strong>
+                                        {{ number_format((float) $exchangeRate->rate, 4) }}
+                                    </strong>
+                                </td>
+
+                                <td>
+                                    {{ $exchangeRate->updatedBy?->email ?? 'Usuario no disponible' }}
+                                </td>
+
+                                <td>
+                                    {{ $exchangeRate->updated_at?->format('d/m/Y H:i') }}
+                                </td>
+
+                                <td>
+                                    <a
+                                            class="btn-secondary fiscal-action-button"
+                                        href="{{ url('/configuraciones') }}?section=fiscal&year={{ $exchangeRate->year }}&month={{ $exchangeRate->month }}"
+                                    >
+                                        Cargar
+                                    </a>
+                                </td>
+                            </tr>
+
+                        @empty
+
+                            <tr>
+                                <td colspan="5" class="fiscal-empty-state">
+                                    Todavía no hay tasas de cambio registradas.
+                                </td>
+                            </tr>
+
+                        @endforelse
+                    </tbody>
+
+                </table>
+
+            </div>
         </div>
+
     </section>
 
-    <section style="padding: 22px; border: 1px solid var(--border); border-radius: 12px;">
-        <h3 style="margin-top: 0;">🧮 Impuestos disponibles</h3>
-        <p style="color: var(--text-secondary); margin-bottom: 20px;">
-            Estas tasas se podrán seleccionar en cada fila de ingresos. Desactiva una tasa cuando ya no
-            quieras ofrecerla en nuevos registros; no la borres si ya está asociada a movimientos.
-        </p>
 
-        <form method="POST" action="{{ route('fiscal.taxes.store') }}"
-              style="display: grid; grid-template-columns: minmax(180px, 1fr) minmax(120px, 200px) auto; gap: 12px; align-items: end; margin-bottom: 24px;">
+    {{-- =====================================================
+         IMPUESTOS
+    ====================================================== --}}
+    <section class="fiscal-section">
+
+        <div class="fiscal-section-header">
+            <div>
+                <h3>Impuestos disponibles</h3>
+
+                <p>
+                    Administra los impuestos que podrán seleccionarse
+                    al registrar ingresos en Finanzas.
+                </p>
+            </div>
+        </div>
+
+        {{-- AGREGAR IMPUESTO --}}
+        <form
+            method="POST"
+            action="{{ route('fiscal.taxes.store') }}"
+            class="fiscal-tax-form"
+        >
             @csrf
-            <div class="form-group">
+
+            <div class="fiscal-field">
                 <label for="tax_name">Nombre del impuesto</label>
-                <input id="tax_name" class="form-control" type="text" name="name"
-                       value="{{ old('name') }}" placeholder="Ej. ISV 15 %" maxlength="120" required>
+
+                <input
+                    id="tax_name"
+                    class="form-control fiscal-control"
+                    type="text"
+                    name="name"
+                    value="{{ old('name') }}"
+                    placeholder="Ej. ISV 15 %"
+                    maxlength="120"
+                    required
+                >
             </div>
-            <div class="form-group">
+
+            <div class="fiscal-field">
                 <label for="tax_percentage">Porcentaje (%)</label>
-                <input id="tax_percentage" class="form-control" type="number" name="percentage"
-                       min="0" max="100" step="0.0001" value="{{ old('percentage') }}"
-                       placeholder="15" required>
+
+                <input
+                    id="tax_percentage"
+                    class="form-control fiscal-control"
+                    type="number"
+                    name="percentage"
+                    min="0"
+                    max="100"
+                    step="0.0001"
+                    value="{{ old('percentage') }}"
+                    placeholder="15"
+                    required
+                >
             </div>
-            <button type="submit" class="btn-primary-custom">➕ Agregar impuesto</button>
+
+            <div class="fiscal-button-wrapper">
+                <button
+                    type="submit"
+                    class="btn-primary-custom fiscal-save-button"
+                >
+                    ＋ Agregar impuesto
+                </button>
+            </div>
+
         </form>
 
-        <div style="overflow-x: auto;">
-            <table class="table">
+        {{-- TABLA DE IMPUESTOS --}}
+        <div class="fiscal-table-container">
+
+            <table class="table fiscal-table fiscal-tax-table">
+
                 <thead>
                     <tr>
-                        <th>Nombre</th>
-                        <th>Tasa</th>
+                        <th>Nombre del impuesto</th>
+                        <th>Porcentaje</th>
                         <th>Estado</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
+
                 <tbody>
                     @forelse($financeTaxRates as $taxRate)
+
                         <tr>
-                            <td colspan="4" style="padding: 12px 8px;">
-                                <form method="POST" action="{{ route('fiscal.taxes.update', $taxRate) }}"
-                                      style="display: grid; grid-template-columns: minmax(180px, 1fr) minmax(110px, 150px) auto auto; gap: 10px; align-items: center;">
+
+                            {{-- NOMBRE EDITABLE --}}
+                            <td>
+                                <form
+                                    id="tax-update-{{ $taxRate->id }}"
+                                    method="POST"
+                                    action="{{ route('fiscal.taxes.update', $taxRate) }}"
+                                    class="fiscal-tax-edit-form"
+                                >
                                     @csrf
                                     @method('PUT')
-                                    <input class="form-control" type="text" name="name"
-                                           value="{{ $taxRate->name }}" maxlength="120" required
-                                           aria-label="Nombre del impuesto">
-                                    <div style="display: flex; align-items: center; gap: 6px;">
-                                        <input class="form-control" type="number" name="percentage"
-                                               value="{{ $taxRate->percentage }}" min="0" max="100"
-                                               step="0.0001" required aria-label="Porcentaje del impuesto">
+
+                                    <input
+                                        class="form-control fiscal-control"
+                                        type="text"
+                                        name="name"
+                                        value="{{ $taxRate->name }}"
+                                        maxlength="120"
+                                        aria-label="Nombre del impuesto"
+                                        required
+                                    >
+
+                                    <div class="fiscal-percentage-field">
+
+                                        <input
+                                            class="form-control fiscal-control"
+                                            type="number"
+                                            name="percentage"
+                                            value="{{ $taxRate->percentage }}"
+                                            min="0"
+                                            max="100"
+                                            step="0.0001"
+                                            aria-label="Porcentaje del impuesto"
+                                            required
+                                        >
+
                                         <span>%</span>
+
                                     </div>
-                                    <button type="submit" class="btn-secondary">Guardar cambios</button>
-                                    <span class="configuration-status {{ $taxRate->active ? 'active' : 'inactive' }}">
-                                        {{ $taxRate->active ? 'Activo' : 'Inactivo' }}
-                                    </span>
                                 </form>
-                                <form method="POST" action="{{ route('fiscal.taxes.toggle', $taxRate) }}"
-                                      style="margin-top: 8px; text-align: right;">
-                                    @csrf
-                                    @method('PATCH')
-                                    <button type="submit" class="btn-secondary">
-                                        {{ $taxRate->active ? 'Desactivar' : 'Activar' }}
+                            </td>
+
+                            {{-- TASA ACTUAL --}}
+                            <td>
+                                <span class="fiscal-rate-badge">
+                                    {{ number_format((float) $taxRate->percentage, 4) }} %
+                                </span>
+                            </td>
+
+                            {{-- ESTADO --}}
+                            <td>
+                                <span class="configuration-status {{ $taxRate->active ? 'active' : 'inactive' }}">
+                                    {{ $taxRate->active ? 'Activo' : 'Inactivo' }}
+                                </span>
+                            </td>
+
+                            {{-- ACCIONES --}}
+                            <td>
+                                <div class="fiscal-tax-actions">
+
+                                    <button
+                                        type="submit"
+                                        form="tax-update-{{ $taxRate->id }}"
+                                        class="btn-primary-custom fiscal-action-button"
+                                    >
+                                        Guardar
                                     </button>
-                                </form>
+
+                                    <form
+                                        method="POST"
+                                        action="{{ route('fiscal.taxes.toggle', $taxRate) }}"
+                                        onsubmit="return confirm('¿Deseas {{ $taxRate->active ? 'desactivar' : 'activar' }} este impuesto?');"
+                                    >
+                                        @csrf
+                                        @method('PATCH')
+
+                                        <button
+                                            type="submit"
+                                            class="btn-secondary fiscal-action-button"
+                                        >
+                                            {{ $taxRate->active ? 'Desactivar' : 'Activar' }}
+                                        </button>
+                                    </form>
+
+                                </div>
                             </td>
+
                         </tr>
+
                     @empty
+
                         <tr>
-                            <td colspan="4" style="text-align: center; padding: 20px;">
-                                No hay impuestos configurados. Agrega, por ejemplo, ISV 15 %.
+                            <td colspan="4" class="fiscal-empty-state">
+                                <div class="fiscal-empty-icon">🧾</div>
+
+                                <strong>No hay impuestos configurados</strong>
+
+                                <p>
+                                    Agrega el primer impuesto utilizando el formulario anterior.
+                                </p>
                             </td>
                         </tr>
+
                     @endforelse
                 </tbody>
+
             </table>
+
         </div>
+
     </section>
+
 </div>
