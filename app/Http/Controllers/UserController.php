@@ -149,6 +149,17 @@ class UserController extends Controller
         ]);
 
 
+        DB::table('user_finance_permissions')->updateOrInsert(
+            ['user_id' => $usuario->id],
+            [
+                'ingresos' => $request->role === 'user' && $request->boolean('finanzas.ingresos'),
+                'egresos' => $request->role === 'user' && $request->boolean('finanzas.egresos'),
+                'resumen' => $request->role === 'user' && $request->boolean('finanzas.resumen'),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]
+        );
+
         /*
         |--------------------------------------------------------------------------
         | PERMISOS
@@ -554,6 +565,10 @@ class UserController extends Controller
                 ->pluck('configuration_option_id')
                 ->toArray();
 
+            $permisosFinanzas = DB::table('user_finance_permissions')
+                ->where('user_id', $usuario->id)
+                ->first();
+
 
         return view(
             'usuarios.edit',
@@ -581,6 +596,7 @@ class UserController extends Controller
                 'tiposFacturas',
 
                 'tiposFacturasUsuario',
+                'permisosFinanzas',
 
             )
         );
@@ -659,6 +675,17 @@ class UserController extends Controller
             }
 
         $usuario->save();
+
+        DB::table('user_finance_permissions')->updateOrInsert(
+            ['user_id' => $usuario->id],
+            [
+                'ingresos' => $request->role === 'user' && $request->boolean('finanzas.ingresos'),
+                'egresos' => $request->role === 'user' && $request->boolean('finanzas.egresos'),
+                'resumen' => $request->role === 'user' && $request->boolean('finanzas.resumen'),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]
+        );
 
 
         DB::table('user_invoice_type')
