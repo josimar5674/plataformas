@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\BusinessCustomer;
 use App\Models\FinanceExchangeRate;
+use App\Models\FinanceBankAccount;
 use App\Models\FinanceIncome;
 use App\Models\FinancePayment;
 use App\Models\FinanceTaxRate;
@@ -17,6 +18,8 @@ class FinanceIncomeController extends Controller
     {
         $incomes = FinanceIncome::with(['customer', 'creator'])
             ->withSum('payments', 'amount_hnl')
+            ->when($request->filled('year'), fn ($q) => $q->whereYear('income_date', (int) $request->input('year')))
+            ->when($request->filled('month'), fn ($q) => $q->whereMonth('income_date', (int) $request->input('month')))
             ->when($request->filled('status'), fn ($q) => $q->where('status', $request->string('status')))
             ->when($request->filled('search'), function ($q) use ($request) {
                 $search = trim($request->string('search')->toString());
@@ -110,6 +113,7 @@ class FinanceIncomeController extends Controller
             'payment_date' => ['required', 'date'],
             'amount_hnl' => ['required', 'numeric', 'gt:0', 'max:999999999999'],
             'payment_method' => ['required', 'string', 'max:80'],
+            'finance_bank_account_id' => ['nullable', 'required_if:payment_method,Transferencia', 'exists:finance_bank_accounts,id'],
             'reference' => ['nullable', 'string', 'max:120'],
             'notes' => ['nullable', 'string', 'max:5000'],
         ]);
@@ -128,11 +132,16 @@ class FinanceIncomeController extends Controller
                 throw ValidationException::withMessages(['amount_hnl' => 'El pago no puede superar el saldo pendiente de L ' . number_format($balance, 2) . '.']);
             }
 
+            if (!empty($data['finance_bank_account_id']) && !FinanceBankAccount::where('active', true)->whereKey($data['finance_bank_account_id'])->exists()) {
+                throw ValidationException::withMessages(['finance_bank_account_id' => 'La cuenta bancaria seleccionada no está activa.']);
+            }
+
             FinancePayment::create([
                 'finance_income_id' => $lockedIncome->id,
                 'payment_date' => $data['payment_date'],
                 'amount_hnl' => $amount,
                 'payment_method' => $data['payment_method'],
+                'finance_bank_account_id' => $data['finance_bank_account_id'] ?? null,
                 'reference' => $data['reference'] ?? null,
                 'notes' => $data['notes'] ?? null,
                 'received_by' => $request->user()->id,
