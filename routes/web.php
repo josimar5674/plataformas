@@ -33,7 +33,7 @@ use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\InvoiceImageController;
 use App\Http\Controllers\FiscalConfigurationController;
 use App\Http\Controllers\FinanceIncomeController;
-use App\Http\Controllers\FinanceIncomeController;
+
 /*
 |--------------------------------------------------------------------------
 | RUTAS PROTEGIDAS
