@@ -14,6 +14,32 @@
             <form method="POST" action="{{ route('finances.incomes.destroy', $income) }}" onsubmit="return confirm('ATENCIÓN: se eliminará este ingreso junto con todos sus abonos e historial de pagos. Esta acción no se puede deshacer. ¿Deseas continuar?');">@csrf @method('DELETE')<button type="submit" class="btn-secondary" style="display:inline-flex;align-items:center;justify-content:center;min-height:40px;box-sizing:border-box;padding:0 14px;border-radius:9px;cursor:pointer;">Eliminar</button></form>
         </div>
     </div>
+    @if($income->invoice_number || $income->inversion)
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 18px;margin-bottom:18px;display:flex;gap:24px;flex-wrap:wrap;">
+            @if($income->invoice_number)<div>Número de factura: <strong>{{ $income->invoice_number }}</strong></div>@endif
+            @if($income->inversion)<div>Inversión: <strong>{{ $income->inversion->clave ? $income->inversion->clave.' — ' : '' }}{{ $income->inversion->nombre }}</strong></div>@endif
+        </div>
+    @endif
+    @if($income->items->isNotEmpty())
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:22px;">
+            <h2 style="margin-top:0;">Productos del ingreso</h2>
+            <div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;min-width:760px;">
+                <thead><tr style="text-align:left;border-bottom:1px solid var(--border);"><th style="padding:10px;">Producto inmobiliario</th><th style="padding:10px;text-align:right;">Cantidad</th><th style="padding:10px;text-align:right;">Precio unitario</th><th style="padding:10px;">Impuesto</th><th style="padding:10px;text-align:right;">Subtotal</th><th style="padding:10px;text-align:right;">Total</th></tr></thead>
+                <tbody>
+                @foreach($income->items as $item)
+                    <tr style="border-bottom:1px solid var(--border);">
+                        <td style="padding:10px;">{{ $item->product_name_snapshot }}</td>
+                        <td style="padding:10px;text-align:right;">{{ number_format((float)$item->quantity,2) }}</td>
+                        <td style="padding:10px;text-align:right;">$ {{ number_format((float)$item->unit_price_usd,2) }}</td>
+                        <td style="padding:10px;">{{ $item->tax_name_snapshot ?? 'Sin impuesto' }} ({{ number_format((float)$item->tax_percentage_snapshot,2) }}%)<br><small>$ {{ number_format((float)$item->tax_amount_usd,2) }}</small></td>
+                        <td style="padding:10px;text-align:right;">$ {{ number_format((float)$item->subtotal_usd,2) }}</td>
+                        <td style="padding:10px;text-align:right;font-weight:600;">$ {{ number_format((float)$item->total_usd,2) }}</td>
+                    </tr>
+                @endforeach
+                </tbody>
+            </table></div>
+        </div>
+    @endif
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:22px;">
         @foreach([['Subtotal USD','$ '.number_format((float)$income->subtotal_usd,2)],['Impuesto '.$income->tax_name_snapshot.' ('.$income->tax_percentage_snapshot.'%)','$ '.number_format((float)$income->tax_amount_usd,2)],['Total USD','$ '.number_format((float)$income->total_usd,2)],['Total en lempiras','L '.number_format((float)$income->total_hnl,2)],['Abonado','L '.number_format($paid,2)],['Saldo pendiente','L '.number_format($outstanding,2)]] as [$label,$value])
             <div style="padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;"><div style="font-size:13px;color:var(--text-secondary);">{{ $label }}</div><strong style="display:block;font-size:20px;margin-top:8px;">{{ $value }}</strong></div>
