@@ -10,6 +10,8 @@ class FinanceIncome extends Model
 {
     protected $fillable = [
         'business_customer_id',
+        'inversion_id',
+        'invoice_number',
         'description',
         'income_date',
         'subtotal_usd',
@@ -39,6 +41,16 @@ class FinanceIncome extends Model
         'tax_amount_hnl' => 'decimal:2',
         'total_hnl' => 'decimal:2',
     ];
+
+    public function inversion(): BelongsTo
+    {
+        return $this->belongsTo(Inversion::class, 'inversion_id');
+    }
+
+    public function items(): HasMany
+    {
+        return $this->hasMany(FinanceIncomeItem::class, 'finance_income_id');
+    }
 
     public function customer(): BelongsTo
     {
