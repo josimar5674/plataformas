@@ -24,7 +24,7 @@ class FinanceIncomeProductController extends Controller
         $taxRates = FinanceTaxRate::where('active', true)->orderBy('sort_order')->orderBy('percentage')->get();
         $exchangeRate = FinanceExchangeRate::where('year', now()->year)->where('month', now()->month)->first();
 
-        return view('finances.incomes.create-products', compact('customers', 'investments', 'taxRates', 'exchangeRate'));
+        return view('finances.incomes.form-products', compact('customers', 'investments', 'taxRates', 'exchangeRate'));
     }
 
     public function products(Inversion $inversion): JsonResponse
@@ -107,7 +107,7 @@ class FinanceIncomeProductController extends Controller
         $taxRates = FinanceTaxRate::where('active', true)->orderBy('sort_order')->orderBy('percentage')->get();
         $exchangeRate = FinanceExchangeRate::where('year', $income->income_date->year)->where('month', $income->income_date->month)->first();
 
-        return view('finances.incomes.edit-products', compact('income', 'customers', 'investments', 'taxRates', 'exchangeRate'));
+        return view('finances.incomes.form-products', compact('income', 'customers', 'investments', 'taxRates', 'exchangeRate'));
     }
 
     public function update(Request $request, FinanceIncome $income)
