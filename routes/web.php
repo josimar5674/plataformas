@@ -810,11 +810,12 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
 // FINANZAS — INGRESOS Y PAGOS
 Route::middleware(['auth', \App\Http\Middleware\EnsureFinancePermission::class . ':ingresos'])->prefix('finanzas')->name('finances.')->group(function () {
     Route::get('/ingresos', [FinanceIncomeController::class, 'index'])->name('incomes.index');
-    Route::get('/ingresos/crear', [FinanceIncomeController::class, 'create'])->name('incomes.create');
-    Route::post('/ingresos', [FinanceIncomeController::class, 'store'])->name('incomes.store');
+    Route::get('/ingresos/crear', [FinanceIncomeProductController::class, 'create'])->name('incomes.create');
+    Route::get('/ingresos/inversiones/{inversion}/productos', [FinanceIncomeProductController::class, 'products'])->name('incomes.products');
+    Route::post('/ingresos', [FinanceIncomeProductController::class, 'store'])->name('incomes.store');
     Route::post('/ingresos/copiar-mes-anterior', [FinanceIncomeController::class, 'generateFromPreviousMonth'])->name('incomes.copy-previous-month');
-    Route::get('/ingresos/{income}/editar', [FinanceIncomeController::class, 'edit'])->name('incomes.edit');
-    Route::put('/ingresos/{income}', [FinanceIncomeController::class, 'update'])->name('incomes.update');
+    Route::get('/ingresos/{income}/editar', [FinanceIncomeProductController::class, 'edit'])->name('incomes.edit');
+    Route::put('/ingresos/{income}', [FinanceIncomeProductController::class, 'update'])->name('incomes.update');
     Route::delete('/ingresos/{income}', [FinanceIncomeController::class, 'destroy'])->name('incomes.destroy');
     Route::get('/ingresos/{income}', [FinanceIncomeController::class, 'show'])->name('incomes.show');
     Route::post('/ingresos/{income}/pagos', [FinanceIncomeController::class, 'storePayment'])->name('incomes.payments.store');
