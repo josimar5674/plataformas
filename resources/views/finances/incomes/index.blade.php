@@ -2,6 +2,19 @@
 
 @section('content')
 <style>
+.finance-income-page { max-width:1500px !important; }
+.finance-income-table thead { background:#eef2ff; color:#27346b; }
+.finance-income-table tbody tr { transition:background-color .18s ease; }
+.finance-income-table tbody tr:hover { background:#eaf4ff !important; }
+.finance-income-table th { white-space:nowrap; font-size:13px; }
+.finance-income-table td { vertical-align:middle; }
+.finance-income-table .money { white-space:nowrap; font-variant-numeric:tabular-nums; }
+.finance-income-table .status-pill { display:inline-flex; align-items:center; padding:5px 10px; border-radius:999px; font-size:12px; font-weight:700; white-space:nowrap; }
+.finance-income-table .status-pending { background:#fff1c2; color:#8a5200; }
+.finance-income-table .status-partial { background:#dbeafe; color:#1d4ed8; }
+.finance-income-table .status-paid { background:#dcfce7; color:#166534; }
+.finance-income-table .income-view-link { display:inline-flex; padding:6px 11px; border-radius:8px; background:#e0e7ff; color:#3730a3; font-weight:600; text-decoration:none; }
+.finance-income-table .income-view-link:hover { background:#c7d2fe; }
 .finance-income-header-actions { display:flex; align-items:stretch; gap:10px; flex-wrap:wrap; }
 .finance-income-header-actions form { display:flex; margin:0; }
 .finance-income-header-actions .btn-primary-custom,
@@ -10,7 +23,7 @@
 .finance-income-header-actions a { text-decoration:none; }
 </style>
 
-<div style="max-width:1200px;margin:24px auto;padding:0 16px;">
+<div class="finance-income-page" style="width:calc(100% - 32px);margin:24px auto;padding:0;">
     <div style="display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:22px;">
         <div><h1 style="margin:0;">Ingresos</h1><p style="color:var(--text-secondary);margin:6px 0 0;">Ingresos en USD, equivalencia en lempiras y abonos recibidos.</p></div>
         <div class="finance-income-header-actions">
@@ -49,7 +62,7 @@
         <button class="btn-secondary" type="submit">Filtrar</button>
     </form>
     <div style="overflow-x:auto;background:var(--surface);border:1px solid var(--border);border-radius:12px;">
-        <table style="width:100%;border-collapse:collapse;min-width:850px;">
+        <table class="finance-income-table" style="width:100%;border-collapse:collapse;min-width:1320px;">
             <thead><tr style="text-align:left;border-bottom:1px solid var(--border);">
                 <th style="padding:13px;">Fecha</th><th style="padding:13px;">Cliente</th><th style="padding:13px;">Descripción</th><th style="padding:13px;">Factura</th><th style="padding:13px;">Productos</th><th style="padding:13px;">Total USD</th><th style="padding:13px;">Total HNL</th><th style="padding:13px;">Abonado HNL</th><th style="padding:13px;">Saldo HNL</th><th style="padding:13px;">Estado</th><th style="padding:13px;"></th>
             </tr></thead>
@@ -62,12 +75,12 @@
                     <td style="padding:13px;">{{ $income->description }}</td>
                     <td style="padding:13px;">{{ $income->invoice_number ?: '—' }}</td>
                     <td style="padding:13px;">@if($income->items->isNotEmpty()){{ $income->items->pluck('product_name_snapshot')->implode(', ') }}@else — @endif</td>
-                    <td style="padding:13px;">$ {{ number_format((float)$income->total_usd, 2) }}</td>
-                    <td style="padding:13px;">L {{ number_format((float)$income->total_hnl, 2) }}</td>
-                    <td style="padding:13px;">L {{ number_format($paid, 2) }}</td>
-                    <td style="padding:13px;">L {{ number_format(max((float)$income->total_hnl-$paid, 0), 2) }}</td>
-                    <td style="padding:13px;">{{ ['pending'=>'Pendiente','partial'=>'Parcial','paid'=>'Pagado'][$income->status] ?? $income->status }}</td>
-                    <td style="padding:13px;"><a href="{{ route('finances.incomes.show', $income) }}">Ver</a></td>
+                    <td class="money" style="padding:13px;">$ {{ number_format((float)$income->total_usd, 2) }}</td>
+                    <td class="money" style="padding:13px;">L {{ number_format((float)$income->total_hnl, 2) }}</td>
+                    <td class="money" style="padding:13px;">L {{ number_format($paid, 2) }}</td>
+                    <td class="money" style="padding:13px;">L {{ number_format(max((float)$income->total_hnl-$paid, 0), 2) }}</td>
+                    <td style="padding:13px;"><span class="status-pill {{ $income->status === 'paid' ? 'status-paid' : ($income->status === 'partial' ? 'status-partial' : 'status-pending') }}">{{ ['pending'=>'Pendiente','partial'=>'Parcial','paid'=>'Pagado'][$income->status] ?? $income->status }}</span></td>
+                    <td style="padding:13px;"><a class="income-view-link" href="{{ route('finances.incomes.show', $income) }}">Ver →</a></td>
                 </tr>
             @empty
                 <tr><td colspan="11" style="padding:28px;text-align:center;color:var(--text-secondary);">Todavía no hay ingresos registrados.</td></tr>
