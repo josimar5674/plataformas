@@ -32,6 +32,8 @@ use App\Http\Controllers\InvoiceTypeController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\InvoiceImageController;
 use App\Http\Controllers\FiscalConfigurationController;
+use App\Http\Controllers\FinanceIncomeController;
+
 /*
 |--------------------------------------------------------------------------
 | RUTAS PROTEGIDAS
@@ -772,6 +774,10 @@ Route::get('/invoices/{invoice}/image', [InvoiceImageController::class, 'show'])
             ->name('taxes.toggle');
         Route::post('/tipo-cambio', [FiscalConfigurationController::class, 'storeExchangeRate'])
             ->name('exchange-rates.store');
+        Route::post('/cuentas-bancarias', [FiscalConfigurationController::class, 'storeBankAccount'])
+            ->name('bank-accounts.store');
+        Route::patch('/cuentas-bancarias/{bankAccount}/toggle', [FiscalConfigurationController::class, 'toggleBankAccount'])
+            ->name('bank-accounts.toggle');
     });
 
 }); // termina el ouauth
@@ -799,4 +805,17 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     '/device-activation/{device}',
     [\App\Http\Controllers\Admin\DeviceActivationController::class, 'destroy']
 )->name('device-activation.destroy');
+});
+
+// FINANZAS — INGRESOS Y PAGOS
+Route::middleware(['auth', \App\Http\Middleware\EnsureFinancePermission::class . ':ingresos'])->prefix('finanzas')->name('finances.')->group(function () {
+    Route::get('/ingresos', [FinanceIncomeController::class, 'index'])->name('incomes.index');
+    Route::get('/ingresos/crear', [FinanceIncomeController::class, 'create'])->name('incomes.create');
+    Route::post('/ingresos', [FinanceIncomeController::class, 'store'])->name('incomes.store');
+    Route::post('/ingresos/copiar-mes-anterior', [FinanceIncomeController::class, 'generateFromPreviousMonth'])->name('incomes.copy-previous-month');
+    Route::get('/ingresos/{income}/editar', [FinanceIncomeController::class, 'edit'])->name('incomes.edit');
+    Route::put('/ingresos/{income}', [FinanceIncomeController::class, 'update'])->name('incomes.update');
+    Route::delete('/ingresos/{income}', [FinanceIncomeController::class, 'destroy'])->name('incomes.destroy');
+    Route::get('/ingresos/{income}', [FinanceIncomeController::class, 'show'])->name('incomes.show');
+    Route::post('/ingresos/{income}/pagos', [FinanceIncomeController::class, 'storePayment'])->name('incomes.payments.store');
 });
