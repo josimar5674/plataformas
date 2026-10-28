@@ -224,7 +224,7 @@ class FinanceIncomeController extends Controller
         $target = now()->startOfMonth();
         $source = $target->copy()->subMonth();
         $sourceIncomes = FinanceIncome::whereYear('income_date', $source->year)
-            ->whereMonth('income_date', $source->month)->with('taxRate')->get();
+            ->whereMonth('income_date', $source->month)->with(['taxRate', 'items'])->get();
 
         if ($sourceIncomes->isEmpty()) {
             return redirect()->route('finances.incomes.index')->with('error', 'No hay ingresos en el mes anterior para copiar.');
@@ -250,19 +250,59 @@ class FinanceIncomeController extends Controller
                 $tax = $sourceIncome->taxRate;
                 $percentage = $tax && $tax->active ? (float) $tax->percentage : (float) $sourceIncome->tax_percentage_snapshot;
                 $taxName = $tax && $tax->active ? $tax->name : $sourceIncome->tax_name_snapshot;
-                $subtotalUsd = (float) $sourceIncome->subtotal_usd;
-                $taxUsd = round($subtotalUsd * $percentage / 100, 2);
-                $totalUsd = round($subtotalUsd + $taxUsd, 2);
                 $rate = (float) $exchangeRate->rate;
                 $day = min($sourceIncome->income_date->day, $target->daysInMonth);
-                FinanceIncome::create([
+
+                $itemRows = [];
+                $subtotalUsd = 0;
+                $taxUsd = 0;
+                if ($sourceIncome->items->isNotEmpty()) {
+                    foreach ($sourceIncome->items as $sourceItem) {
+                        $itemTax = $sourceItem->taxRate;
+                        $itemPercentage = $itemTax && $itemTax->active
+                            ? (float) $itemTax->percentage
+                            : (float) $sourceItem->tax_percentage_snapshot;
+                        $itemTaxName = $itemTax && $itemTax->active
+                            ? $itemTax->name
+                            : $sourceItem->tax_name_snapshot;
+                        $itemSubtotal = round((float) $sourceItem->quantity * (float) $sourceItem->unit_price_usd, 2);
+                        $itemTaxAmount = round($itemSubtotal * $itemPercentage / 100, 2);
+                        $itemTotal = round($itemSubtotal + $itemTaxAmount, 2);
+                        $subtotalUsd += $itemSubtotal;
+                        $taxUsd += $itemTaxAmount;
+                        $itemRows[] = [
+                            'comercial_id' => $sourceItem->comercial_id,
+                            'product_name_snapshot' => $sourceItem->product_name_snapshot,
+                            'quantity' => $sourceItem->quantity,
+                            'unit_price_usd' => $sourceItem->unit_price_usd,
+                            'subtotal_usd' => $itemSubtotal,
+                            'finance_tax_rate_id' => $itemTax && $itemTax->active ? $itemTax->id : null,
+                            'tax_name_snapshot' => $itemTaxName,
+                            'tax_percentage_snapshot' => $itemPercentage,
+                            'tax_amount_usd' => $itemTaxAmount,
+                            'total_usd' => $itemTotal,
+                            'subtotal_hnl' => round($itemSubtotal * $rate, 2),
+                            'tax_amount_hnl' => round($itemTaxAmount * $rate, 2),
+                            'total_hnl' => round($itemTotal * $rate, 2),
+                        ];
+                    }
+                } else {
+                    $subtotalUsd = (float) $sourceIncome->subtotal_usd;
+                    $taxUsd = round($subtotalUsd * $percentage / 100, 2);
+                }
+                $subtotalUsd = round($subtotalUsd, 2);
+                $taxUsd = round($taxUsd, 2);
+                $totalUsd = round($subtotalUsd + $taxUsd, 2);
+                $newIncome = FinanceIncome::create([
                     'business_customer_id' => $sourceIncome->business_customer_id,
+                    'inversion_id' => $sourceIncome->inversion_id,
                     'description' => $sourceIncome->description,
                     'income_date' => $target->copy()->day($day)->toDateString(),
+                    'invoice_number' => null,
                     'subtotal_usd' => $subtotalUsd,
-                    'finance_tax_rate_id' => $tax && $tax->active ? $tax->id : null,
-                    'tax_name_snapshot' => $taxName,
-                    'tax_percentage_snapshot' => $percentage,
+                    'finance_tax_rate_id' => $sourceIncome->items->isEmpty() && $tax && $tax->active ? $tax->id : null,
+                    'tax_name_snapshot' => $sourceIncome->items->isNotEmpty() ? 'Impuestos por producto' : $taxName,
+                    'tax_percentage_snapshot' => $sourceIncome->items->isNotEmpty() ? 0 : $percentage,
                     'tax_amount_usd' => $taxUsd,
                     'total_usd' => $totalUsd,
                     'exchange_rate' => $rate,
@@ -274,6 +314,9 @@ class FinanceIncomeController extends Controller
                     'created_by' => $request->user()->id,
                     'copied_from_income_id' => $sourceIncome->id,
                 ]);
+                if ($itemRows) {
+                    $newIncome->items()->createMany($itemRows);
+                }
                 $created++;
             }
         });
