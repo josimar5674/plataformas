@@ -41,7 +41,7 @@
         </div>
     @endif
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:22px;">
-        @foreach([['Subtotal USD','$ '.number_format((float)$income->subtotal_usd,2)],['Impuesto '.$income->tax_name_snapshot.' ('.$income->tax_percentage_snapshot.'%)','$ '.number_format((float)$income->tax_amount_usd,2)],['Total USD','$ '.number_format((float)$income->total_usd,2)],['Total en lempiras','L '.number_format((float)$income->total_hnl,2)],['Abonado','L '.number_format($paid,2)],['Saldo pendiente','L '.number_format($outstanding,2)]] as [$label,$value])
+        @foreach([['Subtotal USD','$ '.number_format((float)$income->subtotal_usd,2)],[$income->tax_name_snapshot === 'Impuestos por producto' ? 'Impuestos por producto' : 'Impuesto '.$income->tax_name_snapshot.' ('.$income->tax_percentage_snapshot.'%)','$ '.number_format((float)$income->tax_amount_usd,2)],['Total USD','$ '.number_format((float)$income->total_usd,2)],['Total en lempiras','L '.number_format((float)$income->total_hnl,2)],['Abonado','L '.number_format($paid,2)],['Saldo pendiente','L '.number_format($outstanding,2)]] as [$label,$value])
             <div style="padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;"><div style="font-size:13px;color:var(--text-secondary);">{{ $label }}</div><strong style="display:block;font-size:20px;margin-top:8px;">{{ $value }}</strong></div>
         @endforeach
     </div>
