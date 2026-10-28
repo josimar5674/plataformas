@@ -20,6 +20,14 @@
             @if($income->inversion)<div>Inversión: <strong>{{ $income->inversion->clave ? $income->inversion->clave.' — ' : '' }}{{ $income->inversion->nombre }}</strong></div>@endif
         </div>
     @endif
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:22px;">
+        @foreach([['Subtotal USD','$ '.number_format((float)$income->subtotal_usd,2)],[$income->tax_name_snapshot === 'Impuestos por producto' ? 'Impuestos por producto' : 'Impuesto '.$income->tax_name_snapshot.' ('.$income->tax_percentage_snapshot.'%)','$ '.number_format((float)$income->tax_amount_usd,2)],['Total USD','$ '.number_format((float)$income->total_usd,2)],['Total en lempiras','L '.number_format((float)$income->total_hnl,2)],['Abonado','L '.number_format($paid,2)],['Saldo pendiente','L '.number_format($outstanding,2)]] as [$label,$value])
+            <div style="padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;"><div style="font-size:13px;color:var(--text-secondary);">{{ $label }}</div><strong style="display:block;font-size:20px;margin-top:8px;">{{ $value }}</strong></div>
+        @endforeach
+    </div>
+    <div style="display:flex;justify-content:flex-end;margin:-6px 0 12px;">
+        <span title="Tipo de cambio histórico guardado para este ingreso" style="display:inline-flex;align-items:center;gap:7px;padding:7px 11px;border-radius:9px;background:#e0f2fe;border:1px solid #bae6fd;color:#075985;font-size:12px;font-weight:700;white-space:nowrap;">💱 USD = L {{ number_format((float)$income->exchange_rate,2) }}</span>
+    </div>
     @if($income->items->isNotEmpty())
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:22px;">
             <h2 style="margin-top:0;">Productos del ingreso</h2>
@@ -40,17 +48,11 @@
             </table></div>
         </div>
     @endif
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:22px;">
-        @foreach([['Subtotal USD','$ '.number_format((float)$income->subtotal_usd,2)],[$income->tax_name_snapshot === 'Impuestos por producto' ? 'Impuestos por producto' : 'Impuesto '.$income->tax_name_snapshot.' ('.$income->tax_percentage_snapshot.'%)','$ '.number_format((float)$income->tax_amount_usd,2)],['Total USD','$ '.number_format((float)$income->total_usd,2)],['Total en lempiras','L '.number_format((float)$income->total_hnl,2)],['Abonado','L '.number_format($paid,2)],['Saldo pendiente','L '.number_format($outstanding,2)]] as [$label,$value])
-            <div style="padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;"><div style="font-size:13px;color:var(--text-secondary);">{{ $label }}</div><strong style="display:block;font-size:20px;margin-top:8px;">{{ $value }}</strong></div>
-        @endforeach
+    @if($income->notes)
+    <div style="display:flex;gap:8px;align-items:flex-start;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:12px 15px;margin-bottom:22px;color:#475569;">
+        <span aria-hidden="true">📝</span><div><strong style="font-size:13px;">Notas</strong><div style="margin-top:3px;">{{ $income->notes }}</div></div>
     </div>
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:22px;">
-        <h2 style="margin-top:0;">Detalle del cálculo guardado</h2>
-        <p>Tipo de cambio histórico: <strong>1 USD = L {{ number_format((float)$income->exchange_rate,4) }}</strong></p>
-        <p>Impuesto guardado: <strong>{{ $income->tax_name_snapshot }} — {{ number_format((float)$income->tax_percentage_snapshot,4) }}%</strong></p>
-        @if($income->notes)<p>Notas: {{ $income->notes }}</p>@endif
-    </div>
+    @endif
     @if($outstanding > 0)
     <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:22px;">
         <h2 style="margin-top:0;">Registrar abono en lempiras</h2>
