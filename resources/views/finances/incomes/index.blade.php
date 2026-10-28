@@ -51,7 +51,7 @@
     <div style="overflow-x:auto;background:var(--surface);border:1px solid var(--border);border-radius:12px;">
         <table style="width:100%;border-collapse:collapse;min-width:850px;">
             <thead><tr style="text-align:left;border-bottom:1px solid var(--border);">
-                <th style="padding:13px;">Fecha</th><th style="padding:13px;">Cliente</th><th style="padding:13px;">Descripción</th><th style="padding:13px;">Total USD</th><th style="padding:13px;">Total HNL</th><th style="padding:13px;">Abonado HNL</th><th style="padding:13px;">Saldo HNL</th><th style="padding:13px;">Estado</th><th style="padding:13px;"></th>
+                <th style="padding:13px;">Fecha</th><th style="padding:13px;">Cliente</th><th style="padding:13px;">Descripción</th><th style="padding:13px;">Factura</th><th style="padding:13px;">Productos</th><th style="padding:13px;">Total USD</th><th style="padding:13px;">Total HNL</th><th style="padding:13px;">Abonado HNL</th><th style="padding:13px;">Saldo HNL</th><th style="padding:13px;">Estado</th><th style="padding:13px;"></th>
             </tr></thead>
             <tbody>
             @forelse($incomes as $income)
@@ -60,6 +60,8 @@
                     <td style="padding:13px;">{{ $income->income_date->format('d/m/Y') }}</td>
                     <td style="padding:13px;">{{ $income->customer->nombre ?? '—' }}</td>
                     <td style="padding:13px;">{{ $income->description }}</td>
+                    <td style="padding:13px;">{{ $income->invoice_number ?: '—' }}</td>
+                    <td style="padding:13px;">@if($income->items->isNotEmpty()){{ $income->items->pluck('product_name_snapshot')->implode(', ') }}@else — @endif</td>
                     <td style="padding:13px;">$ {{ number_format((float)$income->total_usd, 2) }}</td>
                     <td style="padding:13px;">L {{ number_format((float)$income->total_hnl, 2) }}</td>
                     <td style="padding:13px;">L {{ number_format($paid, 2) }}</td>
@@ -68,7 +70,7 @@
                     <td style="padding:13px;"><a href="{{ route('finances.incomes.show', $income) }}">Ver</a></td>
                 </tr>
             @empty
-                <tr><td colspan="9" style="padding:28px;text-align:center;color:var(--text-secondary);">Todavía no hay ingresos registrados.</td></tr>
+                <tr><td colspan="11" style="padding:28px;text-align:center;color:var(--text-secondary);">Todavía no hay ingresos registrados.</td></tr>
             @endforelse
             </tbody>
         </table>
