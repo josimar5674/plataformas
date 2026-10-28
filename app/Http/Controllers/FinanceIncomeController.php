@@ -16,7 +16,7 @@ class FinanceIncomeController extends Controller
 {
     public function index(Request $request)
     {
-        $query = FinanceIncome::with(['customer', 'creator'])
+        $query = FinanceIncome::with(['customer', 'creator', 'items', 'inversion'])
             ->withSum('payments', 'amount_hnl')
             ->when(!$request->hasAny(['year', 'month']), fn ($q) => $q->whereYear('income_date', now()->year)->whereMonth('income_date', now()->month))
             ->when($request->filled('year'), fn ($q) => $q->whereYear('income_date', (int) $request->input('year')))
