@@ -284,7 +284,7 @@ class FinanceIncomeController extends Controller
 
     public function show(FinanceIncome $income)
     {
-        $income->load(['customer', 'creator', 'payments.receiver', 'payments.bankAccount']);
+        $income->load(['customer', 'creator', 'items', 'inversion', 'payments.receiver', 'payments.bankAccount']);
         $bankAccounts = FinanceBankAccount::where('active', true)->orderBy('bank_name')->orderBy('account_name')->get();
         $paid = (float) $income->payments->sum('amount_hnl');
         $outstanding = max(round((float) $income->total_hnl - $paid, 2), 0);
