@@ -115,8 +115,8 @@
         row.innerHTML='<div class="income-item-grid">'+
           '<div class="product-field"><label>Producto comercial *</label><select class="form-control product-select" name="items['+idx+'][comercial_id]" required><option value="">Selecciona un producto</option>'+options+'</select></div>'+
           '<div><label>Cantidad *</label><input class="form-control quantity" type="number" min="0.01" step="0.01" name="items['+idx+'][quantity]" value="'+escapeHtml(item.quantity??1)+'" required></div>'+
-          '<div><label>Precio unitario USD *</label><input class="form-control unit-price" type="number" min="0" step="0.01" name="items['+idx+'][unit_price_usd]" value="'+escapeHtml(item.unit_price_usd??'')+'" required><small style="color:var(--text-secondary)">Editable para esta venta</small></div>'+
-          '<div class="tax-field"><label>Impuesto de este producto *</label><select class="form-control tax-rate" name="items['+idx+'][finance_tax_rate_id]" required><option value="">Selecciona impuesto</option>'+taxOptions+'</select><small style="color:var(--text-secondary)">Impuesto: <span class="line-tax">$ 0.00</span></small></div>'+
+          '<div><label>Precio unitario USD *</label><input class="form-control unit-price" type="number" min="0" step="0.01" name="items['+idx+'][unit_price_usd]" value="'+escapeHtml(item.unit_price_usd??'')+'" required><small style="color:var(--text-secondary)"></small></div>'+
+          '<div class="tax-field"><label>Impuesto de este producto *</label><select class="form-control tax-rate" name="items['+idx+'][finance_tax_rate_id]" required><option value="">Selecciona impuesto</option>'+taxOptions+'</select><small style="color:var(--text-secondary)"> <span class="line-tax">$ 0.00</span></small></div>'+
           '<div><button type="button" class="btn-secondary remove-item">Quitar</button><div class="item-subtotal" style="margin-top:8px">Subtotal: <span class="line-subtotal">$ 0.00</span></div></div>'+
           '</div>';
         container.appendChild(row);
