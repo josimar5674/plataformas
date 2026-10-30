@@ -17,7 +17,7 @@
 <div class="finance-income-create" style="max-width:1150px;margin:24px auto;padding:0 16px;">
     <a href="{{ route('finances.incomes.index') }}">← Volver a ingresos</a>
     <h1 style="margin:16px 0 6px;">{{ $editing ? 'Editar ingreso' : 'Registrar ingreso' }}</h1>
-    <p style="color:var(--text-secondary);">Agrega uno o varios productos inmobiliarios de Comercial. El precio se carga automáticamente y puedes ajustarlo si el precio final de venta es diferente. Cada producto puede tener un impuesto distinto.</p>
+    <p style="color:var(--text-secondary);">Agrega uno o varios productos de comercial</p>
 
     @if(!$exchangeRate)
         <div class="finance-warning">No hay tasa de cambio configurada para la fecha del ingreso. Configura la tasa mensual en Configuraciones → Fiscal antes de continuar.</div>
@@ -39,7 +39,7 @@
         </div>
 
         <div style="margin-top:18px;"><label for="description">Descripción del ingreso *</label><input class="form-control" id="description" name="description" maxlength="255" value="{{ old('description', $income->description ?? '') }}" required placeholder="Descripción general del ingreso"></div>
-        <div class="items-heading"><div><h2>Productos inmobiliarios</h2><p>Selecciona productos registrados en Comercial. El precio sugerido se trae del registro y puedes modificarlo para esta venta.</p></div><button type="button" class="btn-secondary" id="add-item">＋ Agregar producto</button></div>
+        <div class="items-heading"><div><h2>Productos</h2><p></p></div><button type="button" class="btn-secondary" id="add-item">＋ Agregar producto</button></div>
         <div id="items-container"></div>
         <div id="no-products" class="finance-muted">Selecciona una inversión para cargar sus productos comerciales.</div>
 
@@ -47,7 +47,7 @@
             <div><span>Subtotal</span><strong id="total-subtotal">$ 0.00</strong></div>
             <div><span>Impuestos</span><strong id="total-tax">$ 0.00</strong></div>
             <div class="grand-total"><span>Total del ingreso</span><strong id="total-total">$ 0.00</strong></div>
-            <small>Los cálculos definitivos se validan y guardan en el servidor, junto con la tasa de cambio del mes correspondiente.</small>
+          
         </div>
         <div style="margin-top:18px;"><label for="notes">Notas</label><textarea class="form-control" id="notes" name="notes" rows="3">{{ old('notes', $income->notes ?? '') }}</textarea></div>
         <div class="finance-actions"><a class="btn-secondary" href="{{ route('finances.incomes.index') }}">Cancelar</a><button class="btn-primary-custom" type="submit" @disabled(!$exchangeRate || $customers->isEmpty() || $investments->isEmpty() || $taxRates->isEmpty())>{{ $editing ? 'Guardar cambios' : 'Guardar ingreso' }}</button></div>

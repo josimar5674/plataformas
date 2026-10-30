@@ -49,9 +49,9 @@
         min-height: 46px;
         box-sizing: border-box;
         padding: 10px 40px 10px 13px;
-        border: 1px solid var(--border, #d1d5db);
+        
         border-radius: 9px;
-        background-color: var(--surface, #fff);
+        
         color: var(--text, #111827);
         font: inherit;
         line-height: 1.4;
@@ -68,7 +68,7 @@
         background-size: 16px;
     }
     .finance-income-create select.form-control option {
-        background: var(--surface, #fff);
+        
         color: var(--text, #111827);
     }
     .finance-income-create .form-control:focus {

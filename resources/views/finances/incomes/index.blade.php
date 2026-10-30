@@ -5,7 +5,7 @@
 .finance-income-page { max-width:1500px !important; }
 .finance-income-table thead { background:#eef2ff; color:#27346b; }
 .finance-income-table tbody tr { transition:background-color .18s ease; }
-.finance-income-table tbody tr:hover { background:#eaf4ff !important; }
+.finance-income-table tbody tr:hover { background:#74D4FF !important; }
 .finance-income-table th { white-space:nowrap; font-size:13px; }
 .finance-income-table td { vertical-align:middle; }
 .finance-income-table .money { white-space:nowrap; font-variant-numeric:tabular-nums; }
@@ -14,7 +14,8 @@
 .finance-income-table .status-partial { background:#dbeafe; color:#1d4ed8; }
 .finance-income-table .status-paid { background:#dcfce7; color:#166534; }
 .finance-income-table .income-view-link { display:inline-flex; padding:6px 11px; border-radius:8px; background:#e0e7ff; color:#3730a3; font-weight:600; text-decoration:none; }
-.finance-income-table .income-view-link:hover { background:#c7d2fe; }
+.finance-income-table .income-view-link:hover { background:#74D4FF; }
+
 .finance-income-header-actions { display:flex; align-items:stretch; gap:10px; flex-wrap:wrap; }
 .finance-income-header-actions form { display:flex; margin:0; }
 .finance-income-header-actions .btn-primary-custom,

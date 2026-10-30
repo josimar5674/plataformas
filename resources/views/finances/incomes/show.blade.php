@@ -32,7 +32,7 @@
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:22px;">
             <h2 style="margin-top:0;">Productos del ingreso</h2>
             <div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;min-width:760px;">
-                <thead><tr style="text-align:left;border-bottom:1px solid var(--border);"><th style="padding:10px;">Producto inmobiliario</th><th style="padding:10px;text-align:right;">Cantidad</th><th style="padding:10px;text-align:right;">Precio unitario</th><th style="padding:10px;">Impuesto</th><th style="padding:10px;text-align:right;">Subtotal</th><th style="padding:10px;text-align:right;">Total</th></tr></thead>
+                <thead><tr style="text-align:left;border-bottom:1px solid var(--border);"><th style="padding:10px;">Producto</th><th style="padding:10px;text-align:right;">Cantidad</th><th style="padding:10px;text-align:right;">Precio unitario</th><th style="padding:10px;">Impuesto</th><th style="padding:10px;text-align:right;">Subtotal</th><th style="padding:10px;text-align:right;">Total</th></tr></thead>
                 <tbody>
                 @foreach($income->items as $item)
                     <tr style="border-bottom:1px solid var(--border);">
@@ -56,7 +56,7 @@
     @if($outstanding > 0)
     <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:22px;">
         <h2 style="margin-top:0;">Registrar abono en lempiras</h2>
-        <p style="color:var(--text-secondary);">Saldo actual: <strong>L {{ number_format($outstanding,2) }}</strong>. No se permiten pagos superiores al saldo.</p>
+        <p style="color:var(--text-secondary);">Saldo actual: <strong>L {{ number_format($outstanding,2) }}</strong>.</p>
         <form method="POST" action="{{ route('finances.incomes.payments.store', $income) }}">
             @csrf
             <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;">
